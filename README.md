@@ -1,3 +1,3 @@
 # ELP_GO
 
-## COUCOU ALLISSON
+## Images filtering
