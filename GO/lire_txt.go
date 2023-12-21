@@ -24,10 +24,10 @@ func main() {
 		fin := len(ligne)
 
 		if fin != 0 {
-			for string(ligne[fin-1]) == ":" || string(ligne[fin-1]) == "!" || string(ligne[fin-1]) == "?" {
+			for string(ligne[fin-1]) == ":" || string(ligne[fin-1]) == "!" || string(ligne[fin-1]) == "?" || string(ligne[fin-1]) == ";" {
 				fin = fin - 2
 			}
-			for string(ligne[fin-1]) == "." {
+			for string(ligne[fin-1]) == "." || string(ligne[fin-1]) == "," {
 				fin--
 			}
 			for i := 0; i < fin; i++ {
