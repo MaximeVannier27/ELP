@@ -8,21 +8,23 @@ import ( //"encoding/base64"
 	// two lines to also understand GIF and PNG images:
 	// _ "image/gif"
 	// _ "image/png"
+	"fmt"
 	_ "image/jpeg"
 )
 
 type Pixel struct {
-	red      int
-	green    int
-	blue     int
-	alpha    int
-	coord    [2]int
-	rayon    int
-	adjacent [][]Pixel
+	Red      int
+	Green    int
+	Blue     int
+	Alpha    int
+	Coord    [2]int
+	Adjacent [][]Pixel
 }
 
 func main() {
-
+	// test de la classe Pixel
+	p1 := Pixel{2, 3, 4, 78, [2]int{1, 1}, [][]Pixel{}}
+	fmt.Println(p1)
 	/*
 		// Decode the JPEG data. If reading from file, create a reader with
 		//
