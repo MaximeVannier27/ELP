@@ -17,14 +17,14 @@ type Pixel struct {
 	Green    int
 	Blue     int
 	Alpha    int
-	Coord    [2]int
+	Coord    [2]int // {x,y}
 	Adjacent [][]Pixel
 }
 
 type Image struct {
-	width  int
-	height int
-	radius int
+	Width  int
+	Height int
+	Radius int
 	Matrix [][]Pixel
 }
 
@@ -32,6 +32,15 @@ func main() {
 	// test de la classe Pixel
 	p1 := Pixel{2, 3, 4, 78, [2]int{1, 1}, [][]Pixel{}}
 	fmt.Println(p1)
+	im := Image{1080, 1920, 1, [][]Pixel{}}
+	fmt.Println(im)
+	im.Matrix = append(im.Matrix, []Pixel{})
+	im.Matrix[0] = append(im.Matrix[0], p1)
+	fmt.Println(im)
+	p1 = Pixel{120, 120, 120, 120, [2]int{2, 1}, [][]Pixel{}}
+	im.Matrix[0] = append(im.Matrix[0], p1)
+	fmt.Println(im.Matrix[0][0].Coord)
+
 	/*
 		// Decode the JPEG data. If reading from file, create a reader with
 		//
