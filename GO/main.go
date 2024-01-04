@@ -21,6 +21,13 @@ type Pixel struct {
 	Adjacent [][]Pixel
 }
 
+type Image struct {
+	width  int
+	height int
+	radius int
+	Matrix [][]Pixel
+}
+
 func main() {
 	// test de la classe Pixel
 	p1 := Pixel{2, 3, 4, 78, [2]int{1, 1}, [][]Pixel{}}
