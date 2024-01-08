@@ -32,6 +32,51 @@ type Image struct {
 	Matrix [][]Pixel
 }
 
+
+func mat_voisinage(Im Image) {
+	for x := 0; x < Im.Width; x++ {
+		for y := 0; y < Im.Height; y++ {
+			pix := Im.Matrix[x][y]
+			for xa := 0; xa < 2*Im.Radius+1; xa++ {
+				pix.Adjacent = append(pix.Adjacent, []*Pixel{})
+				for ya := 0; ya < 2*Im.Radius+1; ya++ {
+					if x+xa-Im.Radius < 0 || x+xa-Im.Radius > Im.Width || y+ya-Im.Radius < 0 || y+ya-Im.Radius > Im.Height {
+						pix.Adjacent[xa] = append(pix.Adjacent[xa], nil)
+					} else {
+						pix.Adjacent[xa] = append(pix.Adjacent[xa], &(Im.Matrix[x+xa-Im.Radius][y+ya-Im.Radius]))
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+}
+
+func main() {
+
+	// test de la classe Pixel
+	p1 := Pixel{2, 3, 4, 78, [2]int{1, 1}, [][]*Pixel{}}
+	fmt.Println(p1)
+
+	// test de la classe Image
+	im := Image{1080, 1920, 1, [][]Pixel{}}
+	fmt.Println(im)
+
+	// test de fonctionnement de append avec les matrices
+	im.Matrix = append(im.Matrix, []Pixel{})
+	im.Matrix[0] = append(im.Matrix[0], p1)
+	fmt.Println(im)
+	p1 = Pixel{120, 120, 120, 120, [2]int{2, 1}, [][]*Pixel{}}
+	im.Matrix[0] = append(im.Matrix[0], p1)
+	fmt.Println(im.Matrix[0][0].Coord)
+
+	// Decode the JPEG data. If reading from file, create a reader with
+	//
+	reader, err := os.Open("CGR.jpg")
+
 func uint32ToUint8(value uint32) uint8 {
 	scaledValue := float64(value) * (255.0 / 4294967295.0)
 	return uint8(scaledValue)
