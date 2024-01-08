@@ -42,10 +42,10 @@ func floutage(im_in Image) *image.RGBA {
 			for y_pix := 0; y_pix < 2*r+1; y_pix++ {
 				for x_pix := 0; x_pix < 2*r+1; x_pix++ {
 					if pix_in.Adjacent[y_pix][x_pix] != nil {
-						red_avg += pix_in.Adjacent[y_pix][x_pix].Red
-						green_avg += pix_in.Adjacent[y_pix][x_pix].Green
-						blue_avg += pix_in.Adjacent[y_pix][x_pix].Blue
-						alpha_avg += pix_in.Adjacent[y_pix][x_pix].Alpha
+						red_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Red
+						green_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Green
+						blue_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Blue
+						alpha_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Alpha
 						comp++
 					}
 				}
