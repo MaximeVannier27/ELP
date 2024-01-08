@@ -1,24 +1,54 @@
 package main
 
-import (
-	//"encoding/base64"
-	"fmt"
-	"image"
-	"log"
-	"os"
-
+import ( //"encoding/base64"
 	//"strings"
-
 	// Package image/jpeg is not used explicitly in the code below,
 	// but is imported for its initialization side-effect, which allows
 	// image.Decode to understand JPEG formatted images. Uncomment these
 	// two lines to also understand GIF and PNG images:
 	// _ "image/gif"
 	// _ "image/png"
+	"fmt"
+	"image"
 	_ "image/jpeg"
+	"log"
+	"os"
 )
 
+type Pixel struct {
+	Red      int
+	Green    int
+	Blue     int
+	Alpha    int
+	Coord    [2]int // {x,y}
+	Adjacent [][]Pixel
+}
+
+type Image struct {
+	Width  int
+	Height int
+	Radius int
+	Matrix [][]Pixel
+}
+
 func main() {
+
+	// test de la classe Pixel
+	p1 := Pixel{2, 3, 4, 78, [2]int{1, 1}, [][]Pixel{}}
+	fmt.Println(p1)
+
+	// test de la classe Image
+	im := Image{1080, 1920, 1, [][]Pixel{}}
+	fmt.Println(im)
+
+	// test de fonctionnement de append avec les matrices
+	im.Matrix = append(im.Matrix, []Pixel{})
+	im.Matrix[0] = append(im.Matrix[0], p1)
+	fmt.Println(im)
+	p1 = Pixel{120, 120, 120, 120, [2]int{2, 1}, [][]Pixel{}}
+	im.Matrix[0] = append(im.Matrix[0], p1)
+	fmt.Println(im.Matrix[0][0].Coord)
+
 	// Decode the JPEG data. If reading from file, create a reader with
 	//
 	reader, err := os.Open("CGR.jpg")
