@@ -38,11 +38,7 @@ func floutage(im_in Image) [][]Pixel {
 		im_out = append(im_out, []Pixel{})
 		for x_im := 0; x_im < im_in.Width; x_im++ {
 			pix_in := im_in.Matrix[y_im][x_im]
-			var red_avg uint32 = 0
-			var green_avg uint32 = 0
-			var blue_avg uint32 = 0
-			var alpha_avg uint32 = 0
-			var comp uint32 = 0
+			var red_avg, green_avg, blue_avg, alpha_avg, comp uint32 = 0, 0, 0, 0, 0
 			for y_pix := 0; y_pix < 2*r+1; y_pix++ {
 				for x_pix := 0; x_pix < 2*r+1; x_pix++ {
 					if pix_in.Adjacent[y_pix][x_pix] != nil {
