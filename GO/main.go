@@ -60,7 +60,6 @@ func uint32ToUint8(value uint32) uint8 {
 }
 
 func floutage(im_in Image) *image.RGBA {
-	fmt.Println(im_in.Matrix)
 	r := im_in.Radius
 	im_out := image.NewRGBA(image.Rect(0, 0, im_in.Width, im_in.Height))
 	for y_im := 0; y_im < im_in.Height; y_im++ {
@@ -69,7 +68,6 @@ func floutage(im_in Image) *image.RGBA {
 			var red_avg, green_avg, blue_avg, alpha_avg, comp uint8 = 0, 0, 0, 0, 0
 			for y_pix := 0; y_pix < 2*r+1; y_pix++ {
 				for x_pix := 0; x_pix < 2*r+1; x_pix++ {
-					fmt.Println(pix_in)
 					if pix_in.Adjacent[y_pix][x_pix] != nil {
 						red_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Red
 						green_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Green
@@ -81,6 +79,7 @@ func floutage(im_in Image) *image.RGBA {
 			}
 			im_out.Set(x_im, y_im, color.RGBA{red_avg / comp, green_avg / comp, blue_avg / comp, alpha_avg / comp})
 		}
+		fmt.Println(y_im)
 	}
 	return im_out
 }
@@ -104,7 +103,7 @@ func initImage(addresse_image string) Image {
 	var rayon int
 	var tmp []Pixel
 
-	fmt.Print("Rayon de flouttage: ")
+	fmt.Print("Rayon de floutage: ")
 	fmt.Scanln(&rayon)
 	retour := Image{bordures.Max.X, bordures.Max.Y, rayon, [][]Pixel{}}
 	for y := bordures.Min.Y; y < bordures.Max.Y; y++ {
