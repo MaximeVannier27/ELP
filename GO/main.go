@@ -33,24 +33,22 @@ type Image struct {
 }
 
 func mat_voisinage(Im Image) Image {
+	r := Im.Radius
 	for x := 0; x < Im.Height; x++ {
 		for y := 0; y < Im.Width; y++ {
 			pix := Im.Matrix[x][y]
-			for xa := 0; xa < 2*Im.Radius+1; xa++ {
+			for xa := 0; xa < 2*r+1; xa++ {
 				pix.Adjacent = append(pix.Adjacent, []*Pixel{})
-				for ya := 0; ya < 2*Im.Radius+1; ya++ {
-					if x+xa-Im.Radius < 0 || x+xa-Im.Radius >= Im.Height || y+ya-Im.Radius < 0 || y+ya-Im.Radius >= Im.Width {
+				for ya := 0; ya < 2*r+1; ya++ {
+					if x+xa-r < 0 || x+xa-r >= Im.Height || y+ya-r < 0 || y+ya-r >= Im.Width {
 						pix.Adjacent[xa] = append(pix.Adjacent[xa], nil)
 					} else {
-						pix.Adjacent[xa] = append(pix.Adjacent[xa], &(Im.Matrix[x+xa-Im.Radius][y+ya-Im.Radius]))
+						pix.Adjacent[xa] = append(pix.Adjacent[xa], &(Im.Matrix[x+xa-r][y+ya-r]))
 					}
-
 				}
-
 			}
-
+			Im.Matrix[x][y] = pix
 		}
-
 	}
 	fmt.Println("Voisinage finit")
 	return Im
@@ -114,9 +112,7 @@ func initImage(addresse_image string) Image {
 		for x := bordures.Min.X; x < bordures.Max.X; x++ {
 
 			r, g, b, a := image.At(x, y).RGBA()
-			fmt.Println(r, g, b, a)
 			p := Pixel{uint32ToUint8(r), uint32ToUint8(g), uint32ToUint8(b), uint32ToUint8(a), [2]int{x, y}, [][]*Pixel{}}
-			fmt.Println(p)
 			tmp = append(tmp, p)
 		}
 		retour.Matrix = append(retour.Matrix, tmp)
@@ -129,7 +125,7 @@ func main() {
 	// RECONSTRUCTION IMAGE
 
 	test := initImage("CGR.jpg")
-	fmt.Println(test.Matrix)
+	//fmt.Println(test.Matrix)
 	test = mat_voisinage(test)
 
 	file, err := os.Create("FLOU.png")
