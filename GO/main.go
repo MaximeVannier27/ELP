@@ -21,7 +21,7 @@ type Pixel struct {
 	Blue     int
 	Alpha    int
 	Coord    [2]int // {x,y}
-	Adjacent [][]Pixel
+	Adjacent [][]*Pixel
 }
 
 type Image struct {
@@ -77,6 +77,8 @@ func main() {
 	fmt.Println(im)
 	p1 = Pixel{120, 120, 120, 120, [2]int{2, 1}, [][]Pixel{}}
 	im.Matrix[0] = append(im.Matrix[0], p1)
+	im.Matrix[0] = append(im.Matrix[0], nil)
+
 	fmt.Println(im.Matrix[0][0].Coord)
 
 	// Decode the JPEG data. If reading from file, create a reader with
