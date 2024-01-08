@@ -9,7 +9,7 @@ import ( //"encoding/base64"
 	// _ "image/gif"
 	"fmt"
 	"image"
-	_ "image/color"
+	"image/color"
 	_ "image/jpeg"
 	"image/png"
 	"log"
@@ -22,7 +22,7 @@ type Pixel struct {
 	Blue     uint8
 	Alpha    uint8
 	Coord    [2]int // {x,y}
-	Adjacent [][]Pixel
+	Adjacent [][]*Pixel
 }
 
 type Image struct {
@@ -32,10 +32,37 @@ type Image struct {
 	Matrix [][]Pixel
 }
 
+
 func uint32ToUint8(value uint32) uint8 {
 	scaledValue := float64(value) * (255.0 / 4294967295.0)
 	return uint8(scaledValue)
 }
+
+
+
+func floutage(im_in Image) *image.RGBA {
+	r := im_in.Radius
+	im_out := image.NewRGBA(image.Rect(0, 0, im_in.Width, im_in.Height))
+	for y_im := 0; y_im < im_in.Height; y_im++ {
+		for x_im := 0; x_im < im_in.Width; x_im++ {
+			pix_in := im_in.Matrix[y_im][x_im]
+			var red_avg, green_avg, blue_avg, alpha_avg, comp uint8 = 0, 0, 0, 0, 0
+			for y_pix := 0; y_pix < 2*r+1; y_pix++ {
+				for x_pix := 0; x_pix < 2*r+1; x_pix++ {
+					if pix_in.Adjacent[y_pix][x_pix] != nil {
+						red_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Red
+						green_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Green
+						blue_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Blue
+						alpha_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Alpha
+						comp++
+					}
+				}
+			}
+			im_out.Set(x_im, y_im, color.RGBA{red_avg / comp, green_avg / comp, blue_avg / comp, alpha_avg / comp})
+		}
+	}
+	return im_out
+  
 
 func initImage(addresse_image string) Image {
 
@@ -75,10 +102,32 @@ func initImage(addresse_image string) Image {
 
 func main() {
 
+
 	// RECONSTRUCTION IMAGE
 
 	file, err := os.Create("FLOU.png")
 
+
+	/* test de la classe Pixel
+	p1 := Pixel{2, 3, 4, 78, [2]int{1, 1}, [][]Pixel{}}
+	fmt.Println(p1)
+
+	// test de la classe Image
+	im := Image{1080, 1920, 1, [][]Pixel{}}
+	fmt.Println(im)
+
+	// test de fonctionnement de append avec les matrices
+	im.Matrix = append(im.Matrix, []Pixel{})
+	im.Matrix[0] = append(im.Matrix[0], p1)
+	fmt.Println(im)
+	p1 = Pixel{120, 120, 120, 120, [2]int{2, 1}, [][]*Pixel{}}
+	im.Matrix[0] = append(im.Matrix[0], p1)
+
+	fmt.Println(im.Matrix[0][0].Coord)
+
+	// Decode the JPEG data. If reading from file, create a reader with
+	//
+	reader, err := os.Open("CGR.jpg")
 	if err != nil {
 		panic(err)
 	}
