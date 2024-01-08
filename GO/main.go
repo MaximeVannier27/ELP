@@ -16,10 +16,10 @@ import ( //"encoding/base64"
 )
 
 type Pixel struct {
-	Red      int
-	Green    int
-	Blue     int
-	Alpha    int
+	Red      uint32
+	Green    uint32
+	Blue     uint32
+	Alpha    uint32
 	Coord    [2]int // {x,y}
 	Adjacent [][]*Pixel
 }
@@ -38,11 +38,11 @@ func floutage(im_in Image) [][]Pixel {
 		im_out = append(im_out, []Pixel{})
 		for x_im := 0; x_im < im_in.Width; x_im++ {
 			pix_in := im_in.Matrix[y_im][x_im]
-			red_avg := 0
-			green_avg := 0
-			blue_avg := 0
-			alpha_avg := 0
-			comp := 0
+			var red_avg uint32 = 0
+			var green_avg uint32 = 0
+			var blue_avg uint32 = 0
+			var alpha_avg uint32 = 0
+			var comp uint32 = 0
 			for y_pix := 0; y_pix < 2*r+1; y_pix++ {
 				for x_pix := 0; x_pix < 2*r+1; x_pix++ {
 					if pix_in.Adjacent[y_pix][x_pix] != nil {
@@ -64,7 +64,7 @@ func floutage(im_in Image) [][]Pixel {
 func main() {
 
 	// test de la classe Pixel
-	p1 := Pixel{2, 3, 4, 78, [2]int{1, 1}, [][]Pixel{}}
+	p1 := Pixel{2, 3, 4, 78, [2]int{1, 1}, [][]*Pixel{}}
 	fmt.Println(p1)
 
 	// test de la classe Image
@@ -75,9 +75,8 @@ func main() {
 	im.Matrix = append(im.Matrix, []Pixel{})
 	im.Matrix[0] = append(im.Matrix[0], p1)
 	fmt.Println(im)
-	p1 = Pixel{120, 120, 120, 120, [2]int{2, 1}, [][]Pixel{}}
+	p1 = Pixel{120, 120, 120, 120, [2]int{2, 1}, [][]*Pixel{}}
 	im.Matrix[0] = append(im.Matrix[0], p1)
-	im.Matrix[0] = append(im.Matrix[0], nil)
 
 	fmt.Println(im.Matrix[0][0].Coord)
 
