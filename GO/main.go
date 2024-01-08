@@ -31,6 +31,36 @@ type Image struct {
 	Matrix [][]Pixel
 }
 
+func floutage(im_in Image) [][]Pixel {
+	r := im_in.Radius
+	im_out := [][]Pixel{}
+	for y_im := 0; y_im < im_in.Height; y_im++ {
+		im_out = append(im_out, []Pixel{})
+		for x_im := 0; x_im < im_in.Width; x_im++ {
+			pix_in := im_in.Matrix[y_im][x_im]
+			red_avg := 0
+			green_avg := 0
+			blue_avg := 0
+			alpha_avg := 0
+			comp := 0
+			for y_pix := 0; y_pix < 2*r+1; y_pix++ {
+				for x_pix := 0; x_pix < 2*r+1; x_pix++ {
+					if pix_in.Adjacent[y_pix][x_pix] != nil {
+						red_avg += pix_in.Adjacent[y_pix][x_pix].Red
+						green_avg += pix_in.Adjacent[y_pix][x_pix].Green
+						blue_avg += pix_in.Adjacent[y_pix][x_pix].Blue
+						alpha_avg += pix_in.Adjacent[y_pix][x_pix].Alpha
+						comp++
+					}
+				}
+			}
+			pix_out := Pixel{Red: red_avg / comp, Green: green_avg / comp, Blue: blue_avg / comp, Alpha: alpha_avg / comp, Coord: pix_in.Coord}
+			im_out[y_im] = append(im_out[y_im], pix_out)
+		}
+	}
+	return im_out
+}
+
 func main() {
 
 	// test de la classe Pixel
