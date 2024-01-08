@@ -126,7 +126,6 @@ func main() {
 	//fmt.Println(test.Matrix)
 	test = mat_voisinage(test)
 	res := floutage(test)
-	fmt.Println(res)
 
 	file, err := os.Create("FLOU.png")
 
