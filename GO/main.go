@@ -10,6 +10,7 @@ import ( //"encoding/base64"
 	// _ "image/png"
 	"fmt"
 	"image"
+	"image/color"
 	_ "image/jpeg"
 	"log"
 	"os"
@@ -31,11 +32,10 @@ type Image struct {
 	Matrix [][]Pixel
 }
 
-func floutage(im_in Image) [][]Pixel {
+func floutage(im_in Image) [][]color.RGBA {
 	r := im_in.Radius
-	im_out := [][]Pixel{}
+	im_out := image.NewRGBA(image.Rect(0, 0, im_in.Width, im_in.Height))
 	for y_im := 0; y_im < im_in.Height; y_im++ {
-		im_out = append(im_out, []Pixel{})
 		for x_im := 0; x_im < im_in.Width; x_im++ {
 			pix_in := im_in.Matrix[y_im][x_im]
 			var red_avg, green_avg, blue_avg, alpha_avg, comp uint32 = 0, 0, 0, 0, 0
@@ -50,8 +50,7 @@ func floutage(im_in Image) [][]Pixel {
 					}
 				}
 			}
-			pix_out := Pixel{Red: red_avg / comp, Green: green_avg / comp, Blue: blue_avg / comp, Alpha: alpha_avg / comp, Coord: pix_in.Coord}
-			im_out[y_im] = append(im_out[y_im], pix_out)
+			im_out.Set(x_im, y_im, color.RGBA{red_avg / comp, green_avg / comp, blue_avg / comp, alpha_avg / comp})
 		}
 	}
 	return im_out
