@@ -21,7 +21,7 @@ type Pixel struct {
 	Blue     int
 	Alpha    int
 	Coord    [2]int // {x,y}
-	Adjacent [][]Pixel
+	Adjacent [][]*Pixel
 }
 
 type Image struct {
@@ -29,6 +29,28 @@ type Image struct {
 	Height int
 	Radius int
 	Matrix [][]Pixel
+}
+
+func mat_voisinage(Im Image) {
+	for x := 0; x < Im.Width; x++ {
+		for y := 0; y < Im.Height; y++ {
+			pix := Im.Matrix[x][y]
+			for xa := 0; xa < 2*Im.Radius+1; xa++ {
+				pix.Adjacent = append(pix.Adjacent, []*Pixel{})
+				for ya := 0; ya < 2*Im.Radius+1; ya++ {
+					if x+xa-Im.Radius < 0 || x+xa-Im.Radius > Im.Width || y+ya-Im.Radius < 0 || y+ya-Im.Radius > Im.Height {
+						pix.Adjacent[xa] = append(pix.Adjacent[xa], nil)
+					} else {
+						pix.Adjacent[xa] = append(pix.Adjacent[xa], &(Im.Matrix[x+xa-Im.Radius][y+ya-Im.Radius]))
+					}
+
+				}
+
+			}
+
+		}
+
+	}
 }
 
 func main() {
