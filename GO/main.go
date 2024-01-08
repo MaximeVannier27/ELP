@@ -7,19 +7,20 @@ import ( //"encoding/base64"
 	// image.Decode to understand JPEG formatted images. Uncomment these
 	// two lines to also understand GIF and PNG images:
 	// _ "image/gif"
-	// _ "image/png"
 	"fmt"
 	"image"
+	_ "image/color"
 	_ "image/jpeg"
+	"image/png"
 	"log"
 	"os"
 )
 
 type Pixel struct {
-	Red      int
-	Green    int
-	Blue     int
-	Alpha    int
+	Red      uint8
+	Green    uint8
+	Blue     uint8
+	Alpha    uint8
 	Coord    [2]int // {x,y}
 	Adjacent [][]Pixel
 }
@@ -29,6 +30,11 @@ type Image struct {
 	Height int
 	Radius int
 	Matrix [][]Pixel
+}
+
+func uint32ToUint8(value uint32) uint8 {
+	scaledValue := float64(value) * (255.0 / 4294967295.0)
+	return uint8(scaledValue)
 }
 
 func initImage(addresse_image string) Image {
@@ -58,7 +64,8 @@ func initImage(addresse_image string) Image {
 		for x := bordures.Min.X; x < bordures.Max.X; x++ {
 
 			r, g, b, a := image.At(x, y).RGBA()
-			p := Pixel{int(r), int(g), int(b), int(a), [2]int{x, y}, [][]Pixel{}}
+
+			p := Pixel{uint32ToUint8(r), uint32ToUint8(g), uint32ToUint8(b), uint32ToUint8(a), [2]int{x, y}, [][]Pixel{}}
 			tmp = append(tmp, p)
 		}
 		retour.Matrix = append(retour.Matrix, tmp)
@@ -68,58 +75,17 @@ func initImage(addresse_image string) Image {
 
 func main() {
 
-	/* test de la classe Pixel
-	p1 := Pixel{2, 3, 4, 78, [2]int{1, 1}, [][]Pixel{}}
-	fmt.Println(p1)
+	// RECONSTRUCTION IMAGE
 
-	// test de la classe Image
-	im := Image{1080, 1920, 1, [][]Pixel{}}
-	fmt.Println(im)
+	file, err := os.Create("FLOU.png")
 
-	// test de fonctionnement de append avec les matrices
-	im.Matrix = append(im.Matrix, []Pixel{})
-	im.Matrix[0] = append(im.Matrix[0], p1)
-	fmt.Println(im)
-	p1 = Pixel{120, 120, 120, 120, [2]int{2, 1}, [][]Pixel{}}
-	im.Matrix[0] = append(im.Matrix[0], p1)
-	fmt.Println(im.Matrix[0][0].Coord)
-
-	// Decode the JPEG data. If reading from file, create a reader with
-	//
-	reader, err := os.Open("CGR.jpg")
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
-	defer reader.Close()
-	//reader = base64.NewDecoder(base64.StdEncoding, strings.NewReader(data))
-	m, _, err := image.Decode(reader)
+	defer file.Close()
+
+	err = png.Encode(file /*IMAGE*/)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
-	bounds := m.Bounds()
-
-	// Calculate a 16-bin histogram for m's red, green, blue and alpha components.
-	//
-	// An image's bounds do not necessarily start at (0, 0), so the two loops start
-	// at bounds.Min.Y and bounds.Min.X. Looping over Y first and X second is more
-	// likely to result in better memory access patterns than X first and Y second.
-	var histogram [16][4]int
-	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-		for x := bounds.Min.X; x < bounds.Max.X; x++ {
-			r, g, b, a := m.At(x, y).RGBA()
-			// A color's RGBA method returns values in the range [0, 65535].
-			// Shifting by 12 reduces this to the range [0, 15].
-			histogram[r>>12][0]++
-			histogram[g>>12][1]++
-			histogram[b>>12][2]++
-			histogram[a>>12][3]++
-		}
-	}
-
-	// Print the results.
-	fmt.Printf("%-14s %6s %6s %6s %6s\n", "bin", "red", "green", "blue", "alpha")
-	for i, x := range histogram {
-		fmt.Printf("0x%04x-0x%04x: %6d %6d %6d %6d\n", i<<12, (i+1)<<12-1, x[0], x[1], x[2], x[3])
-	} */
-
 }
