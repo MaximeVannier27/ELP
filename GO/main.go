@@ -56,7 +56,7 @@ func mat_voisinage(Im Image) {
 func main() {
 
 	// test de la classe Pixel
-	p1 := Pixel{2, 3, 4, 78, [2]int{1, 1}, [][]Pixel{}}
+	p1 := Pixel{2, 3, 4, 78, [2]int{1, 1}, [][]*Pixel{}}
 	fmt.Println(p1)
 
 	// test de la classe Image
@@ -67,7 +67,7 @@ func main() {
 	im.Matrix = append(im.Matrix, []Pixel{})
 	im.Matrix[0] = append(im.Matrix[0], p1)
 	fmt.Println(im)
-	p1 = Pixel{120, 120, 120, 120, [2]int{2, 1}, [][]Pixel{}}
+	p1 = Pixel{120, 120, 120, 120, [2]int{2, 1}, [][]*Pixel{}}
 	im.Matrix[0] = append(im.Matrix[0], p1)
 	fmt.Println(im.Matrix[0][0].Coord)
 
