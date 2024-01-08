@@ -10,18 +10,19 @@ import ( //"encoding/base64"
 	// _ "image/png"
 	"fmt"
 	"image"
+	"image/color"
 	_ "image/jpeg"
 	"log"
 	"os"
 )
 
 type Pixel struct {
-	Red      int
-	Green    int
-	Blue     int
-	Alpha    int
+	Red      uint8
+	Green    uint8
+	Blue     uint8
+	Alpha    uint8
 	Coord    [2]int // {x,y}
-	Adjacent [][]Pixel
+	Adjacent [][]*Pixel
 }
 
 type Image struct {
@@ -31,6 +32,30 @@ type Image struct {
 	Matrix [][]Pixel
 }
 
+
+func floutage(im_in Image) *image.RGBA {
+	r := im_in.Radius
+	im_out := image.NewRGBA(image.Rect(0, 0, im_in.Width, im_in.Height))
+	for y_im := 0; y_im < im_in.Height; y_im++ {
+		for x_im := 0; x_im < im_in.Width; x_im++ {
+			pix_in := im_in.Matrix[y_im][x_im]
+			var red_avg, green_avg, blue_avg, alpha_avg, comp uint8 = 0, 0, 0, 0, 0
+			for y_pix := 0; y_pix < 2*r+1; y_pix++ {
+				for x_pix := 0; x_pix < 2*r+1; x_pix++ {
+					if pix_in.Adjacent[y_pix][x_pix] != nil {
+						red_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Red
+						green_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Green
+						blue_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Blue
+						alpha_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Alpha
+						comp++
+					}
+				}
+			}
+			im_out.Set(x_im, y_im, color.RGBA{red_avg / comp, green_avg / comp, blue_avg / comp, alpha_avg / comp})
+		}
+	}
+	return im_out
+  
 func initImage(addresse_image string) Image {
 
 	reader, err := os.Open(addresse_image)
@@ -80,8 +105,9 @@ func main() {
 	im.Matrix = append(im.Matrix, []Pixel{})
 	im.Matrix[0] = append(im.Matrix[0], p1)
 	fmt.Println(im)
-	p1 = Pixel{120, 120, 120, 120, [2]int{2, 1}, [][]Pixel{}}
+	p1 = Pixel{120, 120, 120, 120, [2]int{2, 1}, [][]*Pixel{}}
 	im.Matrix[0] = append(im.Matrix[0], p1)
+
 	fmt.Println(im.Matrix[0][0].Coord)
 
 	// Decode the JPEG data. If reading from file, create a reader with
