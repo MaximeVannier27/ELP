@@ -17,10 +17,10 @@ import ( //"encoding/base64"
 )
 
 type Pixel struct {
-	Red      uint32
-	Green    uint32
-	Blue     uint32
-	Alpha    uint32
+	Red      uint8
+	Green    uint8
+	Blue     uint8
+	Alpha    uint8
 	Coord    [2]int // {x,y}
 	Adjacent [][]*Pixel
 }
@@ -32,13 +32,13 @@ type Image struct {
 	Matrix [][]Pixel
 }
 
-func floutage(im_in Image) [][]color.RGBA {
+func floutage(im_in Image) *image.RGBA {
 	r := im_in.Radius
 	im_out := image.NewRGBA(image.Rect(0, 0, im_in.Width, im_in.Height))
 	for y_im := 0; y_im < im_in.Height; y_im++ {
 		for x_im := 0; x_im < im_in.Width; x_im++ {
 			pix_in := im_in.Matrix[y_im][x_im]
-			var red_avg, green_avg, blue_avg, alpha_avg, comp uint32 = 0, 0, 0, 0, 0
+			var red_avg, green_avg, blue_avg, alpha_avg, comp uint8 = 0, 0, 0, 0, 0
 			for y_pix := 0; y_pix < 2*r+1; y_pix++ {
 				for x_pix := 0; x_pix < 2*r+1; x_pix++ {
 					if pix_in.Adjacent[y_pix][x_pix] != nil {
