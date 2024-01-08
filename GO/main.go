@@ -57,12 +57,12 @@ func mat_voisinage(Im Image) Image {
 }
 
 func uint32ToUint8(value uint32) uint8 {
-	scaledValue := float64(value) * (255.0 / 4294967295.0)
+	scaledValue := float64(value) * (255.0 / 0xffff)
 	return uint8(scaledValue)
 }
 
 func floutage(im_in Image) *image.RGBA {
-	fmt.Println(im_in)
+	fmt.Println(im_in.Matrix)
 	r := im_in.Radius
 	im_out := image.NewRGBA(image.Rect(0, 0, im_in.Width, im_in.Height))
 	for y_im := 0; y_im < im_in.Height; y_im++ {
@@ -114,8 +114,9 @@ func initImage(addresse_image string) Image {
 		for x := bordures.Min.X; x < bordures.Max.X; x++ {
 
 			r, g, b, a := image.At(x, y).RGBA()
-
+			fmt.Println(r, g, b, a)
 			p := Pixel{uint32ToUint8(r), uint32ToUint8(g), uint32ToUint8(b), uint32ToUint8(a), [2]int{x, y}, [][]*Pixel{}}
+			fmt.Println(p)
 			tmp = append(tmp, p)
 		}
 		retour.Matrix = append(retour.Matrix, tmp)
@@ -128,6 +129,7 @@ func main() {
 	// RECONSTRUCTION IMAGE
 
 	test := initImage("CGR.jpg")
+	fmt.Println(test.Matrix)
 	test = mat_voisinage(test)
 
 	file, err := os.Create("FLOU.png")
