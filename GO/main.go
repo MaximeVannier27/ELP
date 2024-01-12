@@ -129,18 +129,15 @@ func floutage_parallèle(im_in Image, debut [2]uint8, fin [2]uint8) {
 	im_out := image.NewRGBA(image.Rect(0, 0, int(fin[0]-debut[0]), 0))
 	y_im := debut[1]
 
-	for x_im := debut[0]; x_im < fin[0]; x_im++ {
-		pix_in := im_in.Matrix[y_im][x_im]
-
+	for x_im := 0; x_im < im_in.Width; x_im++ {
 		var red_avg, green_avg, blue_avg, alpha_avg, comp uint32 = 0, 0, 0, 0, 0
-
 		for y_pix := 0; y_pix < 2*r+1; y_pix++ {
 			for x_pix := 0; x_pix < 2*r+1; x_pix++ {
-				if pix_in.Adjacent[y_pix][x_pix] != nil {
-					red_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Red
-					green_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Green
-					blue_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Blue
-					alpha_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Alpha
+				if y_im+y_pix-r >= 0 && y_im+y_pix-r < im_in.Height && x_im+x_pix-r >= 0 && x_im+x_pix-r < im_in.Width {
+					red_avg += (im_in.Matrix[y_im+y_pix-r][x_im+x_pix-r]).Red
+					green_avg += (im_in.Matrix[y_im+y_pix-r][x_im+x_pix-r]).Green
+					blue_avg += (im_in.Matrix[y_im+y_pix-r][x_im+x_pix-r]).Blue
+					alpha_avg += (im_in.Matrix[y_im+y_pix-r][x_im+x_pix-r]).Alpha
 					comp++
 				}
 			}
