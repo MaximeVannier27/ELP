@@ -1,9 +1,22 @@
+// client.go
+
 package main
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
+	"image"
+	_ "image/jpeg"
+	"io"
+	"log"
 	"net"
+	"os"
 )
+
+type ImageData struct {
+	EncodedData image.Image
+}
 
 func main() {
 	// Se connecter au serveur sur le port 8080
@@ -16,22 +29,34 @@ func main() {
 
 	fmt.Println("Connexion établie avec le serveur!")
 
-	// Envoyer un message au serveur
-	message := []byte("Bonjour, serveur!")
-	_, err = conn.Write(message)
+	// Ouvrir le fichier de l'image à envoyer
+	file, err := os.Open("CGR.jpg")
 	if err != nil {
-		fmt.Println("Erreur lors de l'envoi du message:", err)
+		fmt.Println("Erreur lors de l'ouverture du fichier:", err)
 		return
 	}
+	defer file.Close()
 
-	// Attendre une réponse du serveur
-	buffer := make([]byte, 1024)
-	n, err := conn.Read(buffer)
+	image, _, err := image.Decode(file)
+
 	if err != nil {
-		fmt.Println("Erreur lors de la lecture de la réponse du serveur:", err)
-		return
+		log.Fatal(err)
 	}
 
-	// Afficher la réponse du serveur
-	fmt.Printf("Réponse du serveur: %s\n", buffer[:n])
+	imgdata := ImageData{image}
+
+	// Créer un tampon de mémoire pour stocker les données sérialisées
+	var buffer bytes.Buffer
+
+	// Créer un encodeur Gob qui écrira dans le tampon
+	encoder := gob.NewEncoder(&buffer)
+
+	// Encoder la structure Os_file dans le tampon
+	err = encoder.Encode(imgdata)
+	if err != nil {
+		fmt.Println("Erreur lors de l'encodage:", err)
+		return
+	}
+	io.Copy(conn, &buffer)
+
 }

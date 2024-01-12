@@ -1,9 +1,20 @@
+// server.go
+
 package main
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
+	"image"
+	_ "image/jpeg"
+	"io"
 	"net"
 )
+
+type ImageData struct {
+	EncodedData image.Image
+}
 
 func handleConnection(conn net.Conn) {
 	// Traitement de la connexion ici
@@ -12,28 +23,22 @@ func handleConnection(conn net.Conn) {
 	// Fermer la connexion quand c'est terminé
 	defer conn.Close()
 
-	// Buffer pour stocker les données reçues
-	buffer := make([]byte, 1024)
+	var buffer bytes.Buffer
 
-	for {
-		// Lire les données depuis la connexion
-		n, err := conn.Read(buffer)
-		if err != nil {
-			fmt.Println("Erreur lors de la lecture des données:", err)
-			return
-		}
+	io.Copy(&buffer, conn)
 
-		// Afficher les données reçues
-		fmt.Printf("Message du client: %s\n", buffer[:n])
+	// Créer un décodeur Gob pour lire à partir du tampon
+	decoder := gob.NewDecoder(&buffer)
 
-		// Répondre au client
-		message := []byte("Message du serveur: Bonjour, client!")
-		_, err = conn.Write(message)
-		if err != nil {
-			fmt.Println("Erreur lors de l'envoi de la réponse:", err)
-			return
-		}
+	// Décoder les données du tampon dans une nouvelle structure Person
+	var decodedfile ImageData
+	err := decoder.Decode(&decodedfile)
+	if err != nil {
+		fmt.Println("Erreur lors du décodage:", err)
+		return
 	}
+	fmt.Println(decodedfile.EncodedData)
+
 }
 
 func main() {
