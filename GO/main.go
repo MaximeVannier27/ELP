@@ -115,7 +115,7 @@ func main() {
 
 	// RECONSTRUCTION IMAGE
 
-	image_source := initImage("CGR.jpg")
+	image_source := initImage("golden-retriever.jpg")
 
 	// INITIALISATION VARIABLES//
 
@@ -144,7 +144,7 @@ func main() {
 		c++
 	}
 
-	file, err := os.Create("CGR_FLOU.png")
+	file, err := os.Create("golden-retriever_FLOU.png")
 	if err != nil {
 		panic(err)
 	}
