@@ -100,7 +100,15 @@ func main() {
 
 	test := initImage("CGR.jpg")
 	//fmt.Println(test.Matrix)
+
 	res := floutage(test)
+
+	// PARALLELISME//
+	ch := make(chan [6]uint8)
+
+	var numGoroutines int
+	fmt.Print("Nombre de Go routines en simultanée: ")
+	fmt.Scanln(&numGoroutines)
 
 	file, err := os.Create("FLOU.png")
 
@@ -113,6 +121,31 @@ func main() {
 	if err != nil {
 		panic(err)
 
+	}
+}
+
+func floutage_parallèle(im_in Image, debut [2]uint8, fin [2]uint8) {
+	r := im_in.Radius
+	im_out := image.NewRGBA(image.Rect(0, 0, int(fin[0]-debut[0]), 0))
+	y_im := debut[1]
+
+	for x_im := debut[0]; x_im < fin[0]; x_im++ {
+		pix_in := im_in.Matrix[y_im][x_im]
+
+		var red_avg, green_avg, blue_avg, alpha_avg, comp uint32 = 0, 0, 0, 0, 0
+
+		for y_pix := 0; y_pix < 2*r+1; y_pix++ {
+			for x_pix := 0; x_pix < 2*r+1; x_pix++ {
+				if pix_in.Adjacent[y_pix][x_pix] != nil {
+					red_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Red
+					green_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Green
+					blue_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Blue
+					alpha_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Alpha
+					comp++
+				}
+			}
+		}
+		im_out.Set(x_im, y_im, color.RGBA{uint32ToUint8(red_avg / comp), uint32ToUint8(green_avg / comp), uint32ToUint8(blue_avg / comp), uint32ToUint8(alpha_avg / comp)})
 	}
 }
 
