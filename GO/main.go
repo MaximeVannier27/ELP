@@ -17,12 +17,11 @@ import ( //"encoding/base64"
 )
 
 type Pixel struct {
-	Red      uint32
-	Green    uint32
-	Blue     uint32
-	Alpha    uint32
-	Coord    [2]int // {x,y}
-	Adjacent [][]*Pixel
+	Red   uint32
+	Green uint32
+	Blue  uint32
+	Alpha uint32
+	Coord [2]int // {x,y}
 }
 
 type Image struct {
@@ -30,28 +29,6 @@ type Image struct {
 	Height int
 	Radius int
 	Matrix [][]Pixel
-}
-
-func mat_voisinage(Im Image) Image {
-	r := Im.Radius
-	for x := 0; x < Im.Height; x++ {
-		for y := 0; y < Im.Width; y++ {
-			pix := Im.Matrix[x][y]
-			for xa := 0; xa < 2*r+1; xa++ {
-				pix.Adjacent = append(pix.Adjacent, []*Pixel{})
-				for ya := 0; ya < 2*r+1; ya++ {
-					if x+xa-r < 0 || x+xa-r >= Im.Height || y+ya-r < 0 || y+ya-r >= Im.Width {
-						pix.Adjacent[xa] = append(pix.Adjacent[xa], nil)
-					} else {
-						pix.Adjacent[xa] = append(pix.Adjacent[xa], &(Im.Matrix[x+xa-r][y+ya-r]))
-					}
-				}
-			}
-			Im.Matrix[x][y] = pix
-		}
-	}
-	fmt.Println("Voisinage finit")
-	return Im
 }
 
 func uint32ToUint8(value uint32) uint8 {
@@ -64,15 +41,14 @@ func floutage(im_in Image) *image.RGBA {
 	im_out := image.NewRGBA(image.Rect(0, 0, im_in.Width, im_in.Height))
 	for y_im := 0; y_im < im_in.Height; y_im++ {
 		for x_im := 0; x_im < im_in.Width; x_im++ {
-			pix_in := im_in.Matrix[y_im][x_im]
 			var red_avg, green_avg, blue_avg, alpha_avg, comp uint32 = 0, 0, 0, 0, 0
 			for y_pix := 0; y_pix < 2*r+1; y_pix++ {
 				for x_pix := 0; x_pix < 2*r+1; x_pix++ {
-					if pix_in.Adjacent[y_pix][x_pix] != nil {
-						red_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Red
-						green_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Green
-						blue_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Blue
-						alpha_avg += (*(pix_in.Adjacent[y_pix][x_pix])).Alpha
+					if y_im+y_pix-r >= 0 && y_im+y_pix-r < im_in.Height && x_im+x_pix-r >= 0 && x_im+x_pix-r < im_in.Width {
+						red_avg += (im_in.Matrix[y_im+y_pix-r][x_im+x_pix-r]).Red
+						green_avg += (im_in.Matrix[y_im+y_pix-r][x_im+x_pix-r]).Green
+						blue_avg += (im_in.Matrix[y_im+y_pix-r][x_im+x_pix-r]).Blue
+						alpha_avg += (im_in.Matrix[y_im+y_pix-r][x_im+x_pix-r]).Alpha
 						comp++
 					}
 				}
@@ -110,7 +86,7 @@ func initImage(addresse_image string) Image {
 		for x := bordures.Min.X; x < bordures.Max.X; x++ {
 
 			r, g, b, a := image.At(x, y).RGBA()
-			p := Pixel{r, g, b, a, [2]int{x, y}, [][]*Pixel{}}
+			p := Pixel{r, g, b, a, [2]int{x, y}}
 			tmp = append(tmp, p)
 		}
 		retour.Matrix = append(retour.Matrix, tmp)
@@ -125,7 +101,6 @@ func main() {
 	test := initImage("CGR.jpg")
 	//fmt.Println(test.Matrix)
 
-	test = mat_voisinage(test)
 	res := floutage(test)
 
 	// PARALLELISME//
