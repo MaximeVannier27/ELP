@@ -14,6 +14,7 @@ import ( //"encoding/base64"
 	"image/png"
 	"log"
 	"os"
+	"time"
 )
 
 type Pixel struct {
@@ -94,56 +95,92 @@ func initImage(addresse_image string) Image {
 	return retour
 }
 
+func interimaire(im_in Image, jobs <-chan int, res chan<- [6]uint32) {
+	r := im_in.Radius
+	var y_im int
+	var red_avg, green_avg, blue_avg, alpha_avg, comp uint32
+	var envoi [6]uint32
+	for y_im = range jobs {
+		for x_im := 0; x_im < im_in.Width; x_im++ {
+			red_avg, green_avg, blue_avg, alpha_avg, comp = 0, 0, 0, 0, 0
+
+			for y_pix := 0; y_pix < 2*r+1; y_pix++ {
+				for x_pix := 0; x_pix < 2*r+1; x_pix++ {
+					if y_im+y_pix-r >= 0 && y_im+y_pix-r < im_in.Height && x_im+x_pix-r >= 0 && x_im+x_pix-r < im_in.Width {
+						red_avg += (im_in.Matrix[y_pix+y_im-r][x_im+x_pix-r]).Red
+						green_avg += (im_in.Matrix[y_pix+y_im-r][x_im+x_pix-r]).Green
+						blue_avg += (im_in.Matrix[y_pix+y_im-r][x_im+x_pix-r]).Blue
+						alpha_avg += (im_in.Matrix[y_pix+y_im-r][x_im+x_pix-r]).Alpha
+						comp++
+					}
+				}
+			}
+			envoi[0] = uint32(x_im)
+			envoi[1] = uint32(y_im)
+			envoi[2] = red_avg / comp
+			envoi[3] = green_avg / comp
+			envoi[4] = blue_avg / comp
+			envoi[5] = alpha_avg / comp
+			res <- envoi
+		}
+	}
+	return
+}
+
+func franceTravail(jobs chan<- int, height int) {
+	for i := 0; i < height; i++ {
+		jobs <- i
+	}
+	return
+}
+
 func main() {
 
 	// RECONSTRUCTION IMAGE
 
-	test := initImage("CGR.jpg")
-	//fmt.Println(test.Matrix)
+	image_source := initImage("CGR.jpg")
 
-	res := floutage(test)
+	// INITIALISATION VARIABLES//
 
-	// PARALLELISME//
-	ch := make(chan [6]uint8)
-
+	var pixel [6]uint32
+	im_out := image.NewRGBA(image.Rect(0, 0, image_source.Width, image_source.Height))
+	c := 0
 	var numGoroutines int
 	fmt.Print("Nombre de Go routines en simultanée: ")
 	fmt.Scanln(&numGoroutines)
 
-	file, err := os.Create("FLOU.png")
+	//MESURE TEMPS//
+	startTime := time.Now()
 
+	// PARALLELISME//
+	ch_travail := make(chan int)
+	ch_res := make(chan [6]uint32)
+
+	go franceTravail(ch_travail, image_source.Height)
+	for i := 0; i < numGoroutines; i++ {
+		go interimaire(image_source, ch_travail, ch_res)
+	}
+
+	for c < image_source.Height*image_source.Width {
+		pixel = <-ch_res
+		im_out.Set(int(pixel[0]), int(pixel[1]), color.RGBA{uint32ToUint8(pixel[2]), uint32ToUint8(pixel[3]), uint32ToUint8(pixel[4]), uint32ToUint8(pixel[5])})
+		c++
+	}
+
+	file, err := os.Create("CGR_FLOU.png")
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
-
-	err = png.Encode(file, res)
+	err = png.Encode(file, im_out)
 	if err != nil {
 		panic(err)
-
 	}
-}
 
-func floutage_parallèle(im_in Image, debut [2]uint8, fin [2]uint8) {
-	r := im_in.Radius
-	im_out := image.NewRGBA(image.Rect(0, 0, int(fin[0]-debut[0]), 0))
-	y_im := debut[1]
-
-	for x_im := 0; x_im < im_in.Width; x_im++ {
-		var red_avg, green_avg, blue_avg, alpha_avg, comp uint32 = 0, 0, 0, 0, 0
-		for y_pix := 0; y_pix < 2*r+1; y_pix++ {
-			for x_pix := 0; x_pix < 2*r+1; x_pix++ {
-				if y_im+y_pix-r >= 0 && y_im+y_pix-r < im_in.Height && x_im+x_pix-r >= 0 && x_im+x_pix-r < im_in.Width {
-					red_avg += (im_in.Matrix[y_im+y_pix-r][x_im+x_pix-r]).Red
-					green_avg += (im_in.Matrix[y_im+y_pix-r][x_im+x_pix-r]).Green
-					blue_avg += (im_in.Matrix[y_im+y_pix-r][x_im+x_pix-r]).Blue
-					alpha_avg += (im_in.Matrix[y_im+y_pix-r][x_im+x_pix-r]).Alpha
-					comp++
-				}
-			}
-		}
-		im_out.Set(x_im, y_im, color.RGBA{uint32ToUint8(red_avg / comp), uint32ToUint8(green_avg / comp), uint32ToUint8(blue_avg / comp), uint32ToUint8(alpha_avg / comp)})
-	}
+	close(ch_travail)
+	close(ch_res)
+	endTime := time.Now()
+	fmt.Printf("Durée pour %d Go routines: %s", numGoroutines, endTime.Sub(startTime))
 }
 
 /* test de la classe Pixel
