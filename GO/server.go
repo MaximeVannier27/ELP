@@ -12,10 +12,6 @@ import (
 	"net"
 )
 
-type ImageData struct {
-	EncodedData *image.Image
-}
-
 func handleConnection(conn net.Conn) {
 	// Traitement de la connexion ici
 	fmt.Println("Nouvelle connexion établie!")
@@ -23,10 +19,11 @@ func handleConnection(conn net.Conn) {
 	// Fermer la connexion quand c'est terminé
 	defer conn.Close()
 
-	// Créer un tampon pour recevoir l'image en bytes
+	// Créer un buffer pour recevoir l'image en bytes
 	var buffer bytes.Buffer
 	io.Copy(&buffer, conn)
 
+	// Retransformer l'image depuis le buffer
 	image, _, err := image.Decode(&buffer)
 	if err != nil {
 		log.Fatal(err)
