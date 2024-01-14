@@ -4,9 +4,10 @@ package main
 
 import (
 	"bytes"
-	"encoding/gob"
+	//"encoding/gob"
 	"fmt"
 	"image"
+	"image/jpeg"
 	_ "image/jpeg"
 	"io"
 	"log"
@@ -14,9 +15,9 @@ import (
 	"os"
 )
 
-type ImageData struct {
-	EncodedData image.Image
-}
+/*type ImageData struct {
+	EncodedData *image.Image
+}*/
 
 func main() {
 	// Se connecter au serveur sur le port 8080
@@ -37,26 +38,31 @@ func main() {
 	}
 	defer file.Close()
 
-	image, _, err := image.Decode(file)
+	_, err = file.Seek(0, io.SeekStart)
+	if err != nil {
+		fmt.Println("Erreur lors du déplacement du curseur du fichier source:", err)
+		return
+	}
 
+	image, _, err := image.Decode(file)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	imgdata := ImageData{image}
-
-	// Créer un tampon de mémoire pour stocker les données sérialisées
 	var buffer bytes.Buffer
+	err = jpeg.Encode(&buffer, image, nil)
+	if err != nil {
+		log.Fatal((err))
+	}
+	// Créer un tampon de mémoire pour stocker les données sérialisées
+	//var buffer bytes.Buffer
 
 	// Créer un encodeur Gob qui écrira dans le tampon
-	encoder := gob.NewEncoder(&buffer)
+	//encoder := gob.NewEncoder(&buffer)
 
 	// Encoder la structure Os_file dans le tampon
-	err = encoder.Encode(imgdata)
-	if err != nil {
-		fmt.Println("Erreur lors de l'encodage:", err)
-		return
-	}
+	//err = encoder.Encode(imgdata)
+
 	io.Copy(conn, &buffer)
 
 }

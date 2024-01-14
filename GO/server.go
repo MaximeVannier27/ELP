@@ -4,16 +4,16 @@ package main
 
 import (
 	"bytes"
-	"encoding/gob"
 	"fmt"
 	"image"
 	_ "image/jpeg"
 	"io"
+	"log"
 	"net"
 )
 
 type ImageData struct {
-	EncodedData image.Image
+	EncodedData *image.Image
 }
 
 func handleConnection(conn net.Conn) {
@@ -23,22 +23,18 @@ func handleConnection(conn net.Conn) {
 	// Fermer la connexion quand c'est terminé
 	defer conn.Close()
 
+	// Créer un tampon pour recevoir l'image en bytes
 	var buffer bytes.Buffer
-
 	io.Copy(&buffer, conn)
 
-	// Créer un décodeur Gob pour lire à partir du tampon
-	decoder := gob.NewDecoder(&buffer)
-
-	// Décoder les données du tampon dans une nouvelle structure Person
-	var decodedfile ImageData
-	err := decoder.Decode(&decodedfile)
+	image, _, err := image.Decode(&buffer)
 	if err != nil {
-		fmt.Println("Erreur lors du décodage:", err)
-		return
+		log.Fatal(err)
 	}
-	fmt.Println(decodedfile.EncodedData)
-
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(image)
 }
 
 func main() {
