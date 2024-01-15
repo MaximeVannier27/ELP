@@ -77,31 +77,32 @@ func interimaire(im_in Image, jobs <-chan int, res chan<- [6]uint32) {
 	var y_im int
 	var red_avg, green_avg, blue_avg, alpha_avg, comp uint32
 	var envoi [6]uint32
-	for y_im = range jobs {
-		for x_im := 0; x_im < im_in.Width; x_im++ {
-			red_avg, green_avg, blue_avg, alpha_avg, comp = 0, 0, 0, 0, 0
+	for {
+		for y_im = range jobs {
+			for x_im := 0; x_im < im_in.Width; x_im++ {
+				red_avg, green_avg, blue_avg, alpha_avg, comp = 0, 0, 0, 0, 0
 
-			for y_pix := 0; y_pix < 2*r+1; y_pix++ {
-				for x_pix := 0; x_pix < 2*r+1; x_pix++ {
-					if y_im+y_pix-r >= 0 && y_im+y_pix-r < im_in.Height && x_im+x_pix-r >= 0 && x_im+x_pix-r < im_in.Width {
-						red_avg += (im_in.Matrix[y_pix+y_im-r][x_im+x_pix-r]).Red
-						green_avg += (im_in.Matrix[y_pix+y_im-r][x_im+x_pix-r]).Green
-						blue_avg += (im_in.Matrix[y_pix+y_im-r][x_im+x_pix-r]).Blue
-						alpha_avg += (im_in.Matrix[y_pix+y_im-r][x_im+x_pix-r]).Alpha
-						comp++
+				for y_pix := 0; y_pix < 2*r+1; y_pix++ {
+					for x_pix := 0; x_pix < 2*r+1; x_pix++ {
+						if y_im+y_pix-r >= 0 && y_im+y_pix-r < im_in.Height && x_im+x_pix-r >= 0 && x_im+x_pix-r < im_in.Width {
+							red_avg += (im_in.Matrix[y_pix+y_im-r][x_im+x_pix-r]).Red
+							green_avg += (im_in.Matrix[y_pix+y_im-r][x_im+x_pix-r]).Green
+							blue_avg += (im_in.Matrix[y_pix+y_im-r][x_im+x_pix-r]).Blue
+							alpha_avg += (im_in.Matrix[y_pix+y_im-r][x_im+x_pix-r]).Alpha
+							comp++
+						}
 					}
 				}
+				envoi[0] = uint32(x_im)
+				envoi[1] = uint32(y_im)
+				envoi[2] = red_avg / comp
+				envoi[3] = green_avg / comp
+				envoi[4] = blue_avg / comp
+				envoi[5] = alpha_avg / comp
+				res <- envoi
 			}
-			envoi[0] = uint32(x_im)
-			envoi[1] = uint32(y_im)
-			envoi[2] = red_avg / comp
-			envoi[3] = green_avg / comp
-			envoi[4] = blue_avg / comp
-			envoi[5] = alpha_avg / comp
-			res <- envoi
 		}
 	}
-	return
 }
 
 func franceTravail(jobs chan<- int, height int) {
