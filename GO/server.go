@@ -3,11 +3,12 @@
 package main
 
 import (
-	"bytes"
+	//"bytes"
 	"fmt"
 	"image"
 	_ "image/jpeg"
-	"io"
+
+	//"io"
 	"log"
 	"net"
 )
@@ -20,11 +21,11 @@ func handleConnection(conn net.Conn) {
 	defer conn.Close()
 
 	// Créer un buffer pour recevoir l'image en bytes
-	var buffer bytes.Buffer
-	io.Copy(&buffer, conn)
+	//var buffer bytes.Buffer
+	//io.Copy(&buffer, conn)
 
 	// Retransformer l'image depuis le buffer
-	image, _, err := image.Decode(&buffer)
+	image, _, err := image.Decode(conn)
 	if err != nil {
 		log.Fatal(err)
 	}

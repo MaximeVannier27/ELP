@@ -3,12 +3,13 @@
 package main
 
 import (
-	"bytes"
+	//"bytes"
 	"fmt"
 	"image"
 	"image/jpeg"
 	_ "image/jpeg"
-	"io"
+
+	//"io"
 	"log"
 	"net"
 	"os"
@@ -38,12 +39,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var buffer bytes.Buffer
-	err = jpeg.Encode(&buffer, image, nil)
+	//var buffer bytes.Buffer
+	err = jpeg.Encode(conn, image, nil)
 	if err != nil {
 		log.Fatal((err))
 	}
 
-	io.Copy(conn, &buffer)
+	//io.Copy(conn, &buffer)
 
 }
