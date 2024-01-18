@@ -45,6 +45,22 @@ func main() {
 		log.Fatal((err))
 	}
 
-	//io.Copy(conn, &buffer)
+	// RECEPTION DU RESULTAT ET RESTRUCTURATION EN JPEG
 
+	image_finale, err := jpeg.Decode(conn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fichier, err := os.Create("FLOU_client.jpeg")
+	if err != nil {
+		panic(err)
+	}
+	defer fichier.Close()
+
+	err = jpeg.Encode(fichier, image_finale, nil)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Image traitée sauvegardée avec succès.")
 }
