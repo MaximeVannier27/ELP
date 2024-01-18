@@ -79,6 +79,7 @@ func interimaire(im_in Image, jobs <-chan int, res chan<- [6]uint32) {
 	var envoi [6]uint32
 	for {
 		for y_im = range jobs {
+			print(y_im)
 			for x_im := 0; x_im < im_in.Width; x_im++ {
 				red_avg, green_avg, blue_avg, alpha_avg, comp = 0, 0, 0, 0, 0
 
