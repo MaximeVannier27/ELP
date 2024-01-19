@@ -8,6 +8,7 @@ import (
 	"image"
 	"image/jpeg"
 	_ "image/jpeg"
+	"strings"
 
 	"io"
 
@@ -63,7 +64,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fichier, err := os.Create("FLOU_client.jpeg")
+	title := fmt.Sprintf("%s_floutée.jpeg ", strings.Split(chemin_fichier, ".")[0])
+	fichier, err := os.Create(title)
 	if err != nil {
 		panic(err)
 	}

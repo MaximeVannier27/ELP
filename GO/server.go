@@ -13,11 +13,9 @@ import ( //"encoding/base64"
 	"fmt"
 	"image"
 	"image/color"
-	_ "image/jpeg"
-	"image/png"
+	"image/jpeg"
 	"log"
 	"net"
-	"os"
 	"strconv"
 	"strings"
 	//"io"
@@ -169,14 +167,10 @@ func handleConnection(conn net.Conn, dict_images map[int]Image, ch_travail chan 
 		im_out.Set(int(pixel[0]), int(pixel[1]), color.RGBA{uint32ToUint8(pixel[2]), uint32ToUint8(pixel[3]), uint32ToUint8(pixel[4]), uint32ToUint8(pixel[5])})
 		c++
 	}
-	filename := fmt.Sprintf("image_client%d.png", i)
-	file, err := os.Create(filename)
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
 
-	err = png.Encode(file, im_out)
+	image_retour := image.Image(im_out)
+
+	err = jpeg.Encode(conn, image_retour, nil)
 	if err != nil {
 		panic(err)
 	}
