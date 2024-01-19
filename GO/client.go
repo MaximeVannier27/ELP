@@ -34,7 +34,11 @@ func main() {
 	io.WriteString(conn, fmt.Sprintf("%d\n", rayonFloutage))
 
 	// Ouvrir le fichier de l'image à envoyer
-	file, err := os.Open("golden-retriever.jpg")
+	var chemin_fichier string
+	fmt.Print("Chemin de l'image à traiter (par rapport au repertoire d'exécution) : ")
+	fmt.Scanln(&chemin_fichier)
+
+	file, err := os.Open(chemin_fichier)
 	if err != nil {
 		fmt.Println("Erreur lors de l'ouverture du fichier:", err)
 		return

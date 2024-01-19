@@ -191,7 +191,11 @@ func main() {
 	dict_images := make(map[int]Image)
 	ch_travail := make(chan [2]int)
 
-	for i := 0; i < 16; i++ {
+	var nbre_GoRoutines int
+	fmt.Print("Nombre de Go routines à lancer par le serveur : ")
+	fmt.Scanln(&nbre_GoRoutines)
+
+	for i := 0; i < nbre_GoRoutines; i++ {
 		go interimaire(ch_travail, dict_images)
 	}
 
