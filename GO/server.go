@@ -2,13 +2,7 @@
 
 package main
 
-import ( //"encoding/base64"
-	//"strings"
-	// Package image/jpeg is not used explicitly in the code below,
-	// but is imported for its initialization side-effect, which allows
-	// image.Decode to understand JPEG formatted images. Uncomment these
-	// two lines to also understand GIF and PNG images:
-	// _ "image/gif"
+import (
 	"bufio"
 	"fmt"
 	"image"
@@ -19,7 +13,6 @@ import ( //"encoding/base64"
 	"strconv"
 	"strings"
 	"sync"
-	//"io"
 )
 
 type Pixel struct {
@@ -136,11 +129,6 @@ func handleConnection(conn net.Conn, dict_images *Safemap, ch_travail chan [2]in
 	// Fermer la connexion quand c'est terminé
 	defer conn.Close()
 
-	// Créer un buffer pour recevoir l'image en bytes
-	//var buffer bytes.Buffer
-	//io.Copy(&buffer, conn)
-	// Retransformer l'image depuis le buffer
-
 	im_source, _, err := image.Decode(conn)
 	if err != nil {
 		log.Fatal(err)
@@ -189,7 +177,7 @@ func handleConnection(conn net.Conn, dict_images *Safemap, ch_travail chan [2]in
 }
 
 func main() {
-	// Écoute sur le port 8080
+
 	dict_images := Safemap{make(map[int]Image), sync.Mutex{}}
 	ch_travail := make(chan [2]int)
 
@@ -201,6 +189,7 @@ func main() {
 		go interimaire(ch_travail, &dict_images)
 	}
 
+	// Écoute sur le port 8080
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		fmt.Println("Erreur lors de l'écoute:", err)
