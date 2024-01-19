@@ -17,7 +17,7 @@ import ( //"encoding/base64"
 	"time"
 )
 
-type Pixel struct {
+type Pixels struct {
 	Red   uint32
 	Green uint32
 	Blue  uint32
@@ -25,19 +25,19 @@ type Pixel struct {
 	Coord [2]int // {x,y}
 }
 
-type Image struct {
+type Images struct {
 	Width  int
 	Height int
 	Radius int
 	Matrix [][]Pixel
 }
 
-func uint32ToUint8(value uint32) uint8 {
+func uint32ToUint8s(value uint32) uint8 {
 	scaledValue := float64(value) * (255.0 / 0xffff)
 	return uint8(scaledValue)
 }
 
-func initImage(addresse_image string) Image {
+func initImages(addresse_image string) Images {
 
 	reader, err := os.Open(addresse_image)
 
@@ -58,7 +58,7 @@ func initImage(addresse_image string) Image {
 
 	fmt.Print("Rayon de floutage: ")
 	fmt.Scanln(&rayon)
-	retour := Image{bordures.Max.X, bordures.Max.Y, rayon, [][]Pixel{}}
+	retour := Images{bordures.Max.X, bordures.Max.Y, rayon, [][]Pixel{}}
 	for y := bordures.Min.Y; y < bordures.Max.Y; y++ {
 		tmp = nil
 		for x := bordures.Min.X; x < bordures.Max.X; x++ {
@@ -72,7 +72,7 @@ func initImage(addresse_image string) Image {
 	return retour
 }
 
-func interimaire(im_in Image, jobs <-chan int, res chan<- [6]uint32) {
+func interimaires(im_in Images, jobs <-chan int, res chan<- [6]uint32) {
 	r := im_in.Radius
 	var y_im int
 	var red_avg, green_avg, blue_avg, alpha_avg, comp uint32
@@ -106,18 +106,18 @@ func interimaire(im_in Image, jobs <-chan int, res chan<- [6]uint32) {
 	}
 }
 
-func franceTravail(jobs chan<- int, height int) {
+func franceTravails(jobs chan<- int, height int) {
 	for i := 0; i < height; i++ {
 		jobs <- i
 	}
 	return
 }
 
-func main() {
+func mains() {
 
 	// RECONSTRUCTION IMAGE
 
-	image_source := initImage("golden-retriever.jpg")
+	image_source := initImages("golden-retriever.jpg")
 
 	// INITIALISATION VARIABLES//
 
@@ -135,14 +135,14 @@ func main() {
 	ch_travail := make(chan int)
 	ch_res := make(chan [6]uint32)
 
-	go franceTravail(ch_travail, image_source.Height)
+	go franceTravails(ch_travail, image_source.Height)
 	for i := 0; i < numGoroutines; i++ {
-		go interimaire(image_source, ch_travail, ch_res)
+		go interimaires(image_source, ch_travail, ch_res)
 	}
 
 	for c < image_source.Height*image_source.Width {
 		pixel = <-ch_res
-		im_out.Set(int(pixel[0]), int(pixel[1]), color.RGBA{uint32ToUint8(pixel[2]), uint32ToUint8(pixel[3]), uint32ToUint8(pixel[4]), uint32ToUint8(pixel[5])})
+		im_out.Set(int(pixel[0]), int(pixel[1]), color.RGBA{uint32ToUint8s(pixel[2]), uint32ToUint8s(pixel[3]), uint32ToUint8s(pixel[4]), uint32ToUint8s(pixel[5])})
 		c++
 	}
 

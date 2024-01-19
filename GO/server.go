@@ -18,6 +18,7 @@ import ( //"encoding/base64"
 	"net"
 	"strconv"
 	"strings"
+	"sync"
 	//"io"
 )
 
@@ -35,6 +36,11 @@ type Image struct {
 	Radius  int
 	Matrix  [][]Pixel
 	Channel chan [6]uint32
+}
+
+type Safemap struct {
+	dict  map[int]Image
+	mutex sync.Mutex
 }
 
 func uint32ToUint8(value uint32) uint8 {
@@ -73,7 +79,7 @@ func franceTravail(jobs chan<- [2]int, height int, num_image int) {
 	return
 }
 
-func interimaire(jobs <-chan [2]int, dict_images map[int]Image) {
+func interimaire(jobs <-chan [2]int, dict_images *Safemap) {
 	var im_in Image
 	var r int
 	var red_avg, green_avg, blue_avg, alpha_avg, comp uint32
@@ -82,7 +88,7 @@ func interimaire(jobs <-chan [2]int, dict_images map[int]Image) {
 		for contenu := range jobs {
 			y_im := contenu[0]
 			num_im := contenu[1]
-			im_in = dict_images[num_im]
+			im_in = dict_images.dict[num_im]
 			res := im_in.Channel
 			r = im_in.Radius
 			for x_im := 0; x_im < im_in.Width; x_im++ {
@@ -110,7 +116,7 @@ func interimaire(jobs <-chan [2]int, dict_images map[int]Image) {
 	}
 }
 
-func handleConnection(conn net.Conn, dict_images map[int]Image, ch_travail chan [2]int) {
+func handleConnection(conn net.Conn, dict_images *Safemap, ch_travail chan [2]int) {
 	// Traitement de la connexion ici
 	fmt.Println("Nouvelle connexion établie!")
 
@@ -151,14 +157,16 @@ func handleConnection(conn net.Conn, dict_images map[int]Image, ch_travail chan 
 	var pixel [6]uint32
 	im_out := image.NewRGBA(image.Rect(0, 0, im.Width, im.Height))
 	i := 0
+	dict_images.mutex.Lock()
 	for {
-		if _, exists := dict_images[i]; exists {
+		if _, exists := dict_images.dict[i]; exists {
 			i++
 		} else {
 			break
 		}
 	}
-	dict_images[i] = im
+	dict_images.dict[i] = im
+	dict_images.mutex.Unlock()
 
 	go franceTravail(ch_travail, im.Height, i)
 
@@ -175,14 +183,14 @@ func handleConnection(conn net.Conn, dict_images map[int]Image, ch_travail chan 
 		panic(err)
 	}
 
-	delete(dict_images, i)
+	delete(dict_images.dict, i)
 	close(ch_res)
 
 }
 
 func main() {
 	// Écoute sur le port 8080
-	dict_images := make(map[int]Image)
+	dict_images := Safemap{make(map[int]Image), sync.Mutex{}}
 	ch_travail := make(chan [2]int)
 
 	var nbre_GoRoutines int
@@ -190,7 +198,7 @@ func main() {
 	fmt.Scanln(&nbre_GoRoutines)
 
 	for i := 0; i < nbre_GoRoutines; i++ {
-		go interimaire(ch_travail, dict_images)
+		go interimaire(ch_travail, &dict_images)
 	}
 
 	listener, err := net.Listen("tcp", ":8080")
@@ -211,6 +219,6 @@ func main() {
 		}
 
 		// Gérer la connexion dans une goroutine pour permettre la gestion de plusieurs connexions simultanées
-		go handleConnection(conn, dict_images, ch_travail)
+		go handleConnection(conn, &dict_images, ch_travail)
 	}
 }
