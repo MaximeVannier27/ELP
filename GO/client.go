@@ -9,12 +9,11 @@ import (
 	"image/jpeg"
 	_ "image/jpeg"
 
-	//"io"
-	"bufio"
+	"io"
+
 	"log"
 	"net"
 	"os"
-	"strconv"
 )
 
 func main() {
@@ -28,27 +27,14 @@ func main() {
 
 	fmt.Println("Connexion établie avec le serveur!")
 
-	message, err := bufio.NewReader(conn).ReadString('\n')
-	if err != nil {
-		fmt.Println("Erreur lors de la lecture de la demande du serveur :", err)
-		return
-	}
-	fmt.Print(message)
-
-	// Lire le rayon de floutage du client
+	// Entrer le rayon de floutage et l'envoyer au serveur
 	var rayonFloutage int
+	fmt.Print("Veuillez entrer le rayon de floutage : ")
 	fmt.Scanln(&rayonFloutage)
-
-	// Convertir le rayon de floutage en chaîne pour l'envoi
-	rayonFloutageStr := strconv.Itoa(rayonFloutage)
-
-	// Envoyer le rayon de floutage au serveur
-	fmt.Fprintf(conn, rayonFloutageStr+"\n")
-
-	fmt.Println("Rayon de floutage envoyé au serveur.")
+	io.WriteString(conn, fmt.Sprintf("%d\n", rayonFloutage))
 
 	// Ouvrir le fichier de l'image à envoyer
-	file, err := os.Open("CGR.jpg")
+	file, err := os.Open("golden-retriever.jpg")
 	if err != nil {
 		fmt.Println("Erreur lors de l'ouverture du fichier:", err)
 		return

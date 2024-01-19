@@ -9,17 +9,17 @@ import ( //"encoding/base64"
 	// image.Decode to understand JPEG formatted images. Uncomment these
 	// two lines to also understand GIF and PNG images:
 	// _ "image/gif"
+	"bufio"
 	"fmt"
 	"image"
 	"image/color"
 	_ "image/jpeg"
 	"image/png"
 	"log"
-	"os"
-
-	"bufio"
 	"net"
+	"os"
 	"strconv"
+	"strings"
 	//"io"
 )
 
@@ -51,10 +51,6 @@ func initImage(image image.Image, r_floutage int, ch_res chan [6]uint32) Image {
 	var rayon int
 	var tmp []Pixel
 	var channel chan [6]uint32
-
-	fmt.Print("Rayon de floutage: ")
-	fmt.Scanln(&rayon)
-
 	rayon = r_floutage
 	channel = ch_res
 
@@ -120,22 +116,18 @@ func handleConnection(conn net.Conn, dict_images map[int]Image, ch_travail chan 
 	// Traitement de la connexion ici
 	fmt.Println("Nouvelle connexion établie!")
 
-	fmt.Fprintf(conn, "Veuillez entrer le rayon de floutage : ")
-
-	// Lire la réponse du client
-	scanner := bufio.NewScanner(conn)
-	scanner.Scan()
-	rayonFloutageStr := scanner.Text()
-
-	// Convertir la réponse en entier
-	rayonFloutage, err := strconv.Atoi(rayonFloutageStr)
+	// Demander au client le rayon de floutage souhaité, recevoir la réponse dans un buffer
+	reader := bufio.NewReader(conn)
+	str_rayonFloutage, err := reader.ReadString('\n')
 	if err != nil {
-		fmt.Println("Erreur lors de la conversion en entier :", err)
+		fmt.Println("Error reading rayon floutage:", err)
 		return
 	}
+	str_rayonFloutage = strings.TrimSuffix(str_rayonFloutage, "\n")
+	rayonFloutage, err := strconv.Atoi(str_rayonFloutage)
 
-	// Afficher le rayon de floutage
-	fmt.Println("Rayon de floutage reçu du client :", rayonFloutage)
+	// Now 'rayonFloutage' contains the blurring radius as a string (including the '\n')
+	fmt.Println("Rayon floutage reçu :", rayonFloutage)
 
 	// Fermer la connexion quand c'est terminé
 	defer conn.Close()
