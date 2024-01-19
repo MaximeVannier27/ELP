@@ -2,20 +2,25 @@
 
 package main
 
-import (
-	//"bytes"
+import ( //"encoding/base64"
+	//"strings"
+	// Package image/jpeg is not used explicitly in the code below,
+	// but is imported for its initialization side-effect, which allows
+	// image.Decode to understand JPEG formatted images. Uncomment these
+	// two lines to also understand GIF and PNG images:
+	// _ "image/gif"
 	"fmt"
 	"image"
 	"image/color"
 	_ "image/jpeg"
 	"image/png"
+	"log"
 	"os"
 
-	//"io"
 	"bufio"
-	"log"
 	"net"
 	"strconv"
+	//"io"
 )
 
 type Pixel struct {
@@ -31,7 +36,7 @@ type Image struct {
 	Height  int
 	Radius  int
 	Matrix  [][]Pixel
-	Channel [6]uint32
+	Channel chan [6]uint32
 }
 
 func uint32ToUint8(value uint32) uint8 {
@@ -39,13 +44,13 @@ func uint32ToUint8(value uint32) uint8 {
 	return uint8(scaledValue)
 }
 
-func initImage(image image.Image, r_floutage int, ch_res [6]uint32) Image {
+func initImage(image image.Image, r_floutage int, ch_res chan [6]uint32) Image {
 
 	bordures := image.Bounds()
 
 	var rayon int
 	var tmp []Pixel
-	var channel [6]uint32
+	var channel chan [6]uint32
 
 	fmt.Print("Rayon de floutage: ")
 	fmt.Scanln(&rayon)
@@ -74,7 +79,7 @@ func franceTravail(jobs chan<- [2]int, height int, num_image int) {
 	return
 }
 
-func interimaire(jobs <-chan [2]int) {
+func interimaire(jobs <-chan [2]int, dict_images map[int]Image) {
 	var im_in Image
 	var r int
 	var red_avg, green_avg, blue_avg, alpha_avg, comp uint32
@@ -111,7 +116,7 @@ func interimaire(jobs <-chan [2]int) {
 	}
 }
 
-func handleConnection(conn net.Conn) {
+func handleConnection(conn net.Conn, dict_images map[int]Image, ch_travail chan [2]int) {
 	// Traitement de la connexion ici
 	fmt.Println("Nouvelle connexion établie!")
 
@@ -140,7 +145,7 @@ func handleConnection(conn net.Conn) {
 	//io.Copy(&buffer, conn)
 	// Retransformer l'image depuis le buffer
 
-	image, _, err := image.Decode(conn)
+	im_source, _, err := image.Decode(conn)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -151,7 +156,7 @@ func handleConnection(conn net.Conn) {
 	// Creation de l'objet image
 
 	ch_res := make(chan [6]uint32)
-	im := initImage(image, rayonFloutage, ch_res)
+	im := initImage(im_source, rayonFloutage, ch_res)
 	c := 0
 	var pixel [6]uint32
 	im_out := image.NewRGBA(image.Rect(0, 0, im.Width, im.Height))
@@ -191,11 +196,11 @@ func handleConnection(conn net.Conn) {
 
 func main() {
 	// Écoute sur le port 8080
-	dict_images := make(map[int]int)
+	dict_images := make(map[int]Image)
 	ch_travail := make(chan [2]int)
 
 	for i := 0; i < 16; i++ {
-		go interimaire(ch_travail)
+		go interimaire(ch_travail, dict_images)
 	}
 
 	listener, err := net.Listen("tcp", ":8080")
@@ -216,6 +221,6 @@ func main() {
 		}
 
 		// Gérer la connexion dans une goroutine pour permettre la gestion de plusieurs connexions simultanées
-		go handleConnection(conn)
+		go handleConnection(conn, dict_images, ch_travail)
 	}
 }
