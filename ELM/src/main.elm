@@ -2,7 +2,7 @@ module Main exposing (..)
 import Json.Decode exposing (Decoder, map2, field, string)
 
 type State
-    = gotPackage (Result Http.Error String)
+    = gotPackage (Result Http.Error Package)
     | gotDef 
 
 getPackage : () -> (State)
@@ -14,30 +14,31 @@ getPackage =
 
 type alias Package = 
     { word : string
-    , meanings : Meanings
+    , meanings : List Meanings
     }
 
 type alias Meanings =
     { partOfSpeech : string
-    , definitions : Definitions
+    , definitions : List Definitions
     }
 
 type alias Definitions =
     { definition : string
     }
 
+mainDecoder = at["0"](packageDecoder)
 
 packageDecoder : Decoder Package
 packageDecoder =
     map2 Package
         (field "word" string)
-        (field "meanings" meaningsDecoder)
+        (field "meanings" (List meaningsDecoder))
 
 meaningsDecoder : Decoder Meanings
 meaningsDecoder =
     map2 Meanings
         (field "partOfSpeech" string)
-        (field "definitions" definitionsDecoder)
+        (field "definitions" (List definitionsDecoder))
 
 definitionsDecoder : Decoder Definitions
 definitionsDecoder =
