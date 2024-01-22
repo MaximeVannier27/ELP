@@ -85,7 +85,12 @@ view : Model -> Html Msg
 view model =
   div []
     [ h1 [] [ text "Guess it !" ]
-  --  , AFFICHER_DEF model
+    , ul [] 
+        [ li [] [ text "a l'aide"]]
+        [ li [] [ text "je veux"]]
+        [ li [] [ text "mourir"]]
+        [ li [] [ text "tout de suite"]]
+        
     , h3 [] [ text "Type in to guess" ]
     , div [] [ input [ placeholder "Your guess", value model.content, onInput Change ] [] ]
     , div[] [ label []
@@ -98,7 +103,6 @@ vERIF_MOT = "test"
 dECOUVERTE_MOT = "test"
 
 -- HTTP
-
 
 type State
     = gotPackage (Result Http.Error Package)
