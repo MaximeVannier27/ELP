@@ -37,7 +37,7 @@ main =
 
 
 type alias Model
-  = { definition : String
+  = { definition : Package
   , content : String
   , isChecked : Bool}
 
