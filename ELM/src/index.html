@@ -6195,6 +6195,9 @@ var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Main$subscriptions = function (model) {
 	return $elm$core$Platform$Sub$none;
 };
+var $author$project$Main$Failure = function (a) {
+	return {$: 'Failure', a: a};
+};
 var $author$project$Main$ModelType = F3(
 	function (definition, content, isChecked) {
 		return {content: content, definition: definition, isChecked: isChecked};
@@ -6217,32 +6220,47 @@ var $author$project$Main$update = F2(
 							A3($author$project$Main$ModelType, _package, '', false)),
 						$elm$core$Platform$Cmd$none);
 				} else {
-					return _Utils_Tuple2($author$project$Main$Loading, $elm$core$Platform$Cmd$none);
+					var code = result.a;
+					return _Utils_Tuple2(
+						$author$project$Main$Failure(code),
+						$elm$core$Platform$Cmd$none);
 				}
 			case 'Change':
 				var newContent = msg.a;
-				if (model.$ === 'Succes') {
-					var modeltype = model.a;
-					return _Utils_Tuple2(
-						$author$project$Main$Succes(
-							_Utils_update(
-								modeltype,
-								{content: newContent})),
-						$elm$core$Platform$Cmd$none);
-				} else {
-					return _Utils_Tuple2($author$project$Main$Loading, $elm$core$Platform$Cmd$none);
+				switch (model.$) {
+					case 'Succes':
+						var modeltype = model.a;
+						return _Utils_Tuple2(
+							$author$project$Main$Succes(
+								_Utils_update(
+									modeltype,
+									{content: newContent})),
+							$elm$core$Platform$Cmd$none);
+					case 'Loading':
+						return _Utils_Tuple2($author$project$Main$Loading, $elm$core$Platform$Cmd$none);
+					default:
+						var code = model.a;
+						return _Utils_Tuple2(
+							$author$project$Main$Failure(code),
+							$elm$core$Platform$Cmd$none);
 				}
 			default:
-				if (model.$ === 'Succes') {
-					var modeltype = model.a;
-					return _Utils_Tuple2(
-						$author$project$Main$Succes(
-							_Utils_update(
-								modeltype,
-								{isChecked: !modeltype.isChecked})),
-						$elm$core$Platform$Cmd$none);
-				} else {
-					return _Utils_Tuple2($author$project$Main$Loading, $elm$core$Platform$Cmd$none);
+				switch (model.$) {
+					case 'Succes':
+						var modeltype = model.a;
+						return _Utils_Tuple2(
+							$author$project$Main$Succes(
+								_Utils_update(
+									modeltype,
+									{isChecked: !modeltype.isChecked})),
+							$elm$core$Platform$Cmd$none);
+					case 'Loading':
+						return _Utils_Tuple2($author$project$Main$Loading, $elm$core$Platform$Cmd$none);
+					default:
+						var code = model.a;
+						return _Utils_Tuple2(
+							$author$project$Main$Failure(code),
+							$elm$core$Platform$Cmd$none);
 				}
 		}
 	});
@@ -6251,6 +6269,30 @@ var $author$project$Main$Change = function (a) {
 };
 var $author$project$Main$ToggleCheck = {$: 'ToggleCheck'};
 var $elm$html$Html$div = _VirtualDom_node('div');
+var $author$project$Main$errorToString = function (error) {
+	switch (error.$) {
+		case 'BadUrl':
+			var url = error.a;
+			return 'The URL ' + (url + ' was invalid');
+		case 'Timeout':
+			return 'Unable to reach the server, try again';
+		case 'NetworkError':
+			return 'Unable to reach the server, check your network connection';
+		case 'BadStatus':
+			switch (error.a) {
+				case 500:
+					return 'The server had a problem, try again later';
+				case 400:
+					return 'Verify your information and try again';
+				default:
+					var x = error.a;
+					return 'Unknown error with status ' + $elm$core$String$fromInt(x);
+			}
+		default:
+			var errorMessage = error.a;
+			return errorMessage;
+	}
+};
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$h3 = _VirtualDom_node('h3');
 var $elm$html$Html$input = _VirtualDom_node('input');
@@ -6315,100 +6357,105 @@ var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('
 var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $author$project$Main$view = function (model) {
-	if (model.$ === 'Succes') {
-		var modeltype = model.a;
-		return A2(
-			$elm$html$Html$div,
-			_List_Nil,
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$h1,
-					_List_Nil,
-					_List_fromArray(
-						[
-							$elm$html$Html$text('Guess it !')
-						])),
-					A2(
-					$elm$html$Html$ul,
-					_List_Nil,
-					_List_fromArray(
-						[
-							A2(
-							$elm$html$Html$li,
-							_List_Nil,
-							_List_fromArray(
-								[
-									$elm$html$Html$text('a l\'aide')
-								])),
-							A2(
-							$elm$html$Html$li,
-							_List_Nil,
-							_List_fromArray(
-								[
-									$elm$html$Html$text('je veux')
-								])),
-							A2(
-							$elm$html$Html$li,
-							_List_Nil,
-							_List_fromArray(
-								[
-									$elm$html$Html$text('mourir')
-								])),
-							A2(
-							$elm$html$Html$li,
-							_List_Nil,
-							_List_fromArray(
-								[
-									$elm$html$Html$text('tout de suite')
-								]))
-						])),
-					A2(
-					$elm$html$Html$h3,
-					_List_Nil,
-					_List_fromArray(
-						[
-							$elm$html$Html$text('Type in to guess')
-						])),
-					A2(
-					$elm$html$Html$div,
-					_List_Nil,
-					_List_fromArray(
-						[
-							A2(
-							$elm$html$Html$input,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$placeholder('Your guess'),
-									$elm$html$Html$Attributes$value(modeltype.content),
-									$elm$html$Html$Events$onInput($author$project$Main$Change)
-								]),
-							_List_Nil)
-						])),
-					A2(
-					$elm$html$Html$div,
-					_List_Nil,
-					_List_fromArray(
-						[
-							A2(
-							$elm$html$Html$label,
-							_List_Nil,
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$input,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$type_('checkbox'),
-											$elm$html$Html$Events$onClick($author$project$Main$ToggleCheck)
-										]),
-									_List_Nil),
-									$elm$html$Html$text('Show it')
-								]))
-						]))
-				]));
-	} else {
-		return $elm$html$Html$text('Loading...');
+	switch (model.$) {
+		case 'Succes':
+			var modeltype = model.a;
+			return A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$h1,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Guess it !')
+							])),
+						A2(
+						$elm$html$Html$ul,
+						_List_Nil,
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$li,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('a l\'aide')
+									])),
+								A2(
+								$elm$html$Html$li,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('je veux')
+									])),
+								A2(
+								$elm$html$Html$li,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('mourir')
+									])),
+								A2(
+								$elm$html$Html$li,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('tout de suite')
+									]))
+							])),
+						A2(
+						$elm$html$Html$h3,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Type in to guess')
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_Nil,
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$input,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$placeholder('Your guess'),
+										$elm$html$Html$Attributes$value(modeltype.content),
+										$elm$html$Html$Events$onInput($author$project$Main$Change)
+									]),
+								_List_Nil)
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_Nil,
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$label,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$input,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$type_('checkbox'),
+												$elm$html$Html$Events$onClick($author$project$Main$ToggleCheck)
+											]),
+										_List_Nil),
+										$elm$html$Html$text('Show it')
+									]))
+							]))
+					]));
+		case 'Loading':
+			return $elm$html$Html$text('Loading...');
+		default:
+			var code = model.a;
+			return $elm$html$Html$text(
+				$author$project$Main$errorToString(code));
 	}
 };
 var $author$project$Main$main = $elm$browser$Browser$element(

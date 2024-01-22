@@ -37,13 +37,14 @@ main =
 
 
 type Model
-    = Loading
-    | Succes ModelType
+  = Loading
+  | Succes ModelType
+  | Failure Http.Error
 
 type alias ModelType 
-    = { definition : Package
-    , content : String
-    , isChecked : Bool}
+  = { definition : Package
+  , content : String
+  , isChecked : Bool}
 
 
 -- INIT
@@ -64,24 +65,26 @@ type Msg
   | ToggleCheck
 
 
-update : Msg -> Model -> (Model, Cmd Msg)
+update : Msg -> Model -> (Model, Cmd Msg) 
 update msg model =
   case msg of
     GotPackage result ->
       case result of
         Ok package ->
           (Succes  (ModelType package "" False), Cmd.none)
-        Err _ -> (Loading, Cmd.none)
+        Err code -> (Failure code, Cmd.none)
     Change newContent ->
         case model of
             Succes modeltype ->
                 (Succes {modeltype | content = newContent} , Cmd.none)
             Loading -> (Loading, Cmd.none)
+            Failure code -> (Failure code, Cmd.none)
     ToggleCheck ->
         case model of
             Succes modeltype ->
                 (Succes {modeltype | isChecked = not modeltype.isChecked}, Cmd.none)
             Loading -> (Loading, Cmd.none)
+            Failure code -> (Failure code, Cmd.none)
 
 
 -- SUBSCRIPTIONS
@@ -100,23 +103,25 @@ view : Model -> Html Msg
 view model =
   case model of 
     Succes modeltype ->
-        div []
-            [ h1 [] [ text "Guess it !" ]
-            , ul [] 
-                [ li [] [ text "a l'aide"]
-                , li [] [ text "je veux"]
-                , li [] [ text "mourir"]
-                , li [] [ text "tout de suite"]
-            ]
-                
-            , h3 [] [ text "Type in to guess" ]
-            , div [] [ input [ placeholder "Your guess", value modeltype.content, onInput Change ] [] ]
-            , div[] [ label []
-                    [ input [ type_ "checkbox", onClick ToggleCheck ] []
-                    , text "Show it"
-                    ] ]
-            ]
+      div []
+        [ h1 [] [ text "Guess it !" ]
+        , ul [] 
+          [ li [] [ text "a l'aide"]
+          , li [] [ text "je veux"]
+          , li [] [ text "mourir"]
+          , li [] [ text "tout de suite"]
+          ]
+            
+        , h3 [] [ text "Type in to guess" ]
+        , div [] [ input [ placeholder "Your guess", value modeltype.content, onInput Change ] [] ]
+        , div[] [ label []
+          [ input [ type_ "checkbox", onClick ToggleCheck ] []
+          , text "Show it"
+          ] 
+          ]
+        ]
     Loading -> text "Loading..."
+    Failure code -> text (errorToString code)
 
 
 vERIF_MOT = "test"
@@ -166,6 +171,26 @@ definitionsDecoder =
     map Definitions
         (field "definition" string)
 
+
+-- Error
+
+errorToString : Http.Error -> String
+errorToString error =
+    case error of
+        Http.BadUrl url ->
+            "The URL " ++ url ++ " was invalid"
+        Http.Timeout ->
+            "Unable to reach the server, try again"
+        Http.NetworkError ->
+            "Unable to reach the server, check your network connection"
+        Http.BadStatus 500 ->
+            "The server had a problem, try again later"
+        Http.BadStatus 400 ->
+            "Verify your information and try again"
+        Http.BadStatus x ->
+            "Unknown error with status " ++ (String.fromInt x)
+        Http.BadBody errorMessage ->
+            errorMessage
 
 
 
