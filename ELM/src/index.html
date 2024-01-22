@@ -6252,7 +6252,6 @@ var $author$project$Main$Change = function (a) {
 var $author$project$Main$ToggleCheck = {$: 'ToggleCheck'};
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
-var $elm$html$Html$h3 = _VirtualDom_node('h3');
 var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$label = _VirtualDom_node('label');
 var $elm$html$Html$li = _VirtualDom_node('li');
@@ -6327,7 +6326,8 @@ var $author$project$Main$view = function (model) {
 					_List_Nil,
 					_List_fromArray(
 						[
-							$elm$html$Html$text('Guess it !')
+							$elm$html$Html$text(
+							modeltype.isChecked ? 'word' : 'Guess it!')
 						])),
 					A2(
 					$elm$html$Html$ul,
@@ -6364,11 +6364,12 @@ var $author$project$Main$view = function (model) {
 								]))
 						])),
 					A2(
-					$elm$html$Html$h3,
+					$elm$html$Html$div,
 					_List_Nil,
 					_List_fromArray(
 						[
-							$elm$html$Html$text('Type in to guess')
+							$elm$html$Html$text(
+							(modeltype.content === 'word') ? 'BIEN JOUE OUI OUI OUI' : 'Type your guess here !')
 						])),
 					A2(
 					$elm$html$Html$div,

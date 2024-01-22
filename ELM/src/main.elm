@@ -101,7 +101,7 @@ view model =
   case model of 
     Succes modeltype ->
         div []
-            [ h1 [] [ text "Guess it !" ]
+            [ h1 [] [ text (if modeltype.isChecked then "word" else "Guess it!") ]
             , ul [] 
                 [ li [] [ text "a l'aide"]
                 , li [] [ text "je veux"]
@@ -109,7 +109,7 @@ view model =
                 , li [] [ text "tout de suite"]
             ]
                 
-            , h3 [] [ text "Type in to guess" ]
+            , div [] [ text (if modeltype.content == "word" then "BIEN JOUE OUI OUI OUI" else "Type your guess here !") ]
             , div [] [ input [ placeholder "Your guess", value modeltype.content, onInput Change ] [] ]
             , div[] [ label []
                     [ input [ type_ "checkbox", onClick ToggleCheck ] []
