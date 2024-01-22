@@ -1,5 +1,5 @@
 module Main exposing (..)
-import Json.Decode exposing (Decoder, map2, field, string)
+
 
 
 
@@ -12,11 +12,11 @@ import Json.Decode exposing (Decoder, map2, field, string)
 --
 
 import Browser
-import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html exposing (Html, div, h1, ul, li, text, input, label, h2, h3)
+import Html.Attributes exposing (value, type_, placeholder)
 import Html.Events exposing (..)
 import Http
-import Json.Decode exposing (Decoder, map4, field, int, string)
+import Json.Decode exposing (Decoder, map2, field, string, at, list, map)
 
 
 
@@ -37,7 +37,7 @@ main =
 
 
 type alias Model
-  = { definition : Package
+  = { definition : String
   , content : String
   , isChecked : Bool}
 
@@ -48,7 +48,7 @@ type alias Model
 
 init : () -> (Model, Cmd Msg)
 init _ =
-  (Model "DEFINITION" "" False, Cmd.none)
+  (Model "" "" False, Cmd.none)
 
 
 
@@ -87,9 +87,9 @@ view model =
     [ h1 [] [ text "Guess it !" ]
     , ul [] 
         [ li [] [ text "a l'aide"]]
-        [ li [] [ text "je veux"]]
-        [ li [] [ text "mourir"]]
-        [ li [] [ text "tout de suite"]]
+        , li [] [ text "je veux"]
+        , li [] [ text "mourir"]
+        , li [] [ text "tout de suite"]
         
     , h3 [] [ text "Type in to guess" ]
     , div [] [ input [ placeholder "Your guess", value model.content, onInput Change ] [] ]
@@ -105,28 +105,28 @@ dECOUVERTE_MOT = "test"
 -- HTTP
 
 type State
-    = gotPackage (Result Http.Error Package)
-    | gotDef 
+    = GotPackage (Result Http.Error Package)
+    | GotDef 
 
-getPackage : () -> (State)
+getPackage : Cmd State
 getPackage =
   Http.get
-    { url = "https://api.dictionaryapi.dev/api/v2/entries/en/" ++ word
-    , expect = Http.expectString gotPackage mainDecoder
+    { url = "https://api.dictionaryapi.dev/api/v2/entries/en/" ++ "word"
+    , expect = Http.expectJson GotPackage mainDecoder
     }
 
 type alias Package = 
-    { word : string
+    { word : String
     , meanings : List Meanings
     }
 
 type alias Meanings =
-    { partOfSpeech : string
+    { partOfSpeech : String
     , definitions : List Definitions
     }
 
 type alias Definitions =
-    { definition : string
+    { definition : String
     }
 
 mainDecoder = at["0"](packageDecoder)
@@ -135,17 +135,18 @@ packageDecoder : Decoder Package
 packageDecoder =
     map2 Package
         (field "word" string)
-        (field "meanings" (List meaningsDecoder))
+        (field "meanings" (list meaningsDecoder))
 
 meaningsDecoder : Decoder Meanings
 meaningsDecoder =
     map2 Meanings
         (field "partOfSpeech" string)
-        (field "definitions" (List definitionsDecoder))
+        (field "definitions" (list definitionsDecoder))
 
 definitionsDecoder : Decoder Definitions
 definitionsDecoder =
-    field "definition" string
+    map Definitions
+        (field "definition" string)
 
 
 
