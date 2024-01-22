@@ -36,11 +36,14 @@ main =
 -- MODEL
 
 
-type alias Model
-  = { definition : String
-  , content : String
-  , isChecked : Bool}
+type Model
+    = Loading
+    | Succes ModelType
 
+type alias ModelType 
+    = { definition : Package
+    , content : String
+    , isChecked : Bool}
 
 
 -- INIT
@@ -48,7 +51,7 @@ type alias Model
 
 init : () -> (Model, Cmd Msg)
 init _ =
-  (Model "" "" False, Cmd.none)
+  (Loading, getPackage)
 
 
 
@@ -56,17 +59,29 @@ init _ =
 
 
 type Msg
-  = Change String
+  = GotPackage (Result Http.Error Package)
+  | Change String
   | ToggleCheck
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
+    GotPackage result ->
+      case result of
+        Ok package ->
+          (Succes  (ModelType package "" False), Cmd.none)
+        Err _ -> (Loading, Cmd.none)
     Change newContent ->
-        ({model | content = newContent} , Cmd.none)
+        case model of
+            Succes modeltype ->
+                (Succes {modeltype | content = newContent} , Cmd.none)
+            Loading -> (Loading, Cmd.none)
     ToggleCheck ->
-        ({model | isChecked = not model.isChecked}, Cmd.none)
+        case model of
+            Succes modeltype ->
+                (Succes {modeltype | isChecked = not modeltype.isChecked}, Cmd.none)
+            Loading -> (Loading, Cmd.none)
 
 
 -- SUBSCRIPTIONS
@@ -83,32 +98,35 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-  div []
-    [ h1 [] [ text "Guess it !" ]
-    , ul [] 
-        [ li [] [ text "a l'aide"]]
-        , li [] [ text "je veux"]
-        , li [] [ text "mourir"]
-        , li [] [ text "tout de suite"]
-        
-    , h3 [] [ text "Type in to guess" ]
-    , div [] [ input [ placeholder "Your guess", value model.content, onInput Change ] [] ]
-    , div[] [ label []
-            [ input [ type_ "checkbox", onClick ToggleCheck ] []
-            , text "Show it"
-            ] ]
-    ]
+  case model of 
+    Succes modeltype ->
+        div []
+            [ h1 [] [ text "Guess it !" ]
+            , ul [] 
+                [ li [] [ text "a l'aide"]
+                , li [] [ text "je veux"]
+                , li [] [ text "mourir"]
+                , li [] [ text "tout de suite"]
+            ]
+                
+            , h3 [] [ text "Type in to guess" ]
+            , div [] [ input [ placeholder "Your guess", value modeltype.content, onInput Change ] [] ]
+            , div[] [ label []
+                    [ input [ type_ "checkbox", onClick ToggleCheck ] []
+                    , text "Show it"
+                    ] ]
+            ]
+    Loading -> text "Loading..."
+
 
 vERIF_MOT = "test"
 dECOUVERTE_MOT = "test"
 
 -- HTTP
 
-type State
-    = GotPackage (Result Http.Error Package)
-    | GotDef 
 
-getPackage : Cmd State
+
+getPackage : Cmd Msg
 getPackage =
   Http.get
     { url = "https://api.dictionaryapi.dev/api/v2/entries/en/" ++ "word"
