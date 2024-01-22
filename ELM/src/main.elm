@@ -103,6 +103,7 @@ view : Model -> Html Msg
 view model =
   case model of 
     Succes modeltype ->
+<<<<<<< HEAD
       div []
         [ h1 [] [ text "Guess it !" ]
         , ul [] 
@@ -120,6 +121,24 @@ view model =
           ] 
           ]
         ]
+=======
+        div []
+            [ h1 [] [ text (if modeltype.isChecked then "word" else "Guess it!") ]
+            , ul [] 
+                [ li [] [ text "a l'aide"]
+                , li [] [ text "je veux"]
+                , li [] [ text "mourir"]
+                , li [] [ text "tout de suite"]
+            ]
+                
+            , div [] [ text (if modeltype.content == "word" then "BIEN JOUE OUI OUI OUI" else "Type your guess here !") ]
+            , div [] [ input [ placeholder "Your guess", value modeltype.content, onInput Change ] [] ]
+            , div[] [ label []
+                    [ input [ type_ "checkbox", onClick ToggleCheck ] []
+                    , text "Show it"
+                    ] ]
+            ]
+>>>>>>> 90a07b61c2e9fec1df3ffff85f75e745695a9566
     Loading -> text "Loading..."
     Failure code -> text (errorToString code)
 

@@ -6294,7 +6294,6 @@ var $author$project$Main$errorToString = function (error) {
 	}
 };
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
-var $elm$html$Html$h3 = _VirtualDom_node('h3');
 var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$label = _VirtualDom_node('label');
 var $elm$html$Html$li = _VirtualDom_node('li');
@@ -6357,6 +6356,7 @@ var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('
 var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $author$project$Main$view = function (model) {
+<<<<<<< HEAD
 	switch (model.$) {
 		case 'Succes':
 			var modeltype = model.a;
@@ -6456,6 +6456,104 @@ var $author$project$Main$view = function (model) {
 			var code = model.a;
 			return $elm$html$Html$text(
 				$author$project$Main$errorToString(code));
+=======
+	if (model.$ === 'Succes') {
+		var modeltype = model.a;
+		return A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$h1,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							modeltype.isChecked ? 'word' : 'Guess it!')
+						])),
+					A2(
+					$elm$html$Html$ul,
+					_List_Nil,
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$li,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text('a l\'aide')
+								])),
+							A2(
+							$elm$html$Html$li,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text('je veux')
+								])),
+							A2(
+							$elm$html$Html$li,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text('mourir')
+								])),
+							A2(
+							$elm$html$Html$li,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text('tout de suite')
+								]))
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							(modeltype.content === 'word') ? 'BIEN JOUE OUI OUI OUI' : 'Type your guess here !')
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_Nil,
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$input,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$placeholder('Your guess'),
+									$elm$html$Html$Attributes$value(modeltype.content),
+									$elm$html$Html$Events$onInput($author$project$Main$Change)
+								]),
+							_List_Nil)
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_Nil,
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$label,
+							_List_Nil,
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$input,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$type_('checkbox'),
+											$elm$html$Html$Events$onClick($author$project$Main$ToggleCheck)
+										]),
+									_List_Nil),
+									$elm$html$Html$text('Show it')
+								]))
+						]))
+				]));
+	} else {
+		return $elm$html$Html$text('Loading...');
+>>>>>>> 90a07b61c2e9fec1df3ffff85f75e745695a9566
 	}
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
