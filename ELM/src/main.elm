@@ -12,11 +12,12 @@ module Main exposing (..)
 --
 
 import Browser
-import Html exposing (Html, div, h1, ul, li, text, input, label, h2, h3)
-import Html.Attributes exposing (value, type_, placeholder)
+import Html exposing (Html, div, h1, ol, ul, li, text, input, label, h2, h3)
+import Html.Attributes exposing (value, type_, placeholder, style)
 import Html.Events exposing (..)
 import Http
 import Json.Decode exposing (Decoder, map2, field, string, at, list, map)
+
 
 
 
@@ -103,44 +104,33 @@ view : Model -> Html Msg
 view model =
   case model of 
     Succes modeltype ->
-<<<<<<< HEAD
-      div []
-        [ h1 [] [ text "Guess it !" ]
-        , ul [] 
-          [ li [] [ text "a l'aide"]
-          , li [] [ text "je veux"]
-          , li [] [ text "mourir"]
-          , li [] [ text "tout de suite"]
-          ]
-            
-        , h3 [] [ text "Type in to guess" ]
-        , div [] [ input [ placeholder "Your guess", value modeltype.content, onInput Change ] [] ]
-        , div[] [ label []
-          [ input [ type_ "checkbox", onClick ToggleCheck ] []
-          , text "Show it"
-          ] 
-          ]
-        ]
-=======
         div []
-            [ h1 [] [ text (if modeltype.isChecked then "word" else "Guess it!") ]
-            , ul [] 
-                [ li [] [ text "a l'aide"]
-                , li [] [ text "je veux"]
-                , li [] [ text "mourir"]
-                , li [] [ text "tout de suite"]
-            ]
-                
-            , div [] [ text (if modeltype.content == "word" then "BIEN JOUE OUI OUI OUI" else "Type your guess here !") ]
+            [ h1 [] [ text (if modeltype.isChecked then modeltype.definition.word else "Guess it!") ]
+            , printPackage modeltype.definition   
+            , div [] [ text (if modeltype.content == modeltype.definition.word then "BIEN JOUE OUI OUI OUI" else "Type your guess here !") ]
             , div [] [ input [ placeholder "Your guess", value modeltype.content, onInput Change ] [] ]
             , div[] [ label []
                     [ input [ type_ "checkbox", onClick ToggleCheck ] []
                     , text "Show it"
                     ] ]
             ]
->>>>>>> 90a07b61c2e9fec1df3ffff85f75e745695a9566
     Loading -> text "Loading..."
     Failure code -> text (errorToString code)
+
+printPackage : Package -> Html Msg
+printPackage {word, meanings} = div [] [ ul [] (printMeanings meanings)]
+
+printMeanings : List Meanings -> List (Html Msg) 
+printMeanings liste =
+  case liste of
+    [] -> [text ""]
+    (x::xs) ->  li [style "Font" "bold"] (text (x.partOfSpeech) :: [ol [] (printDef x.definitions)]) :: printMeanings xs
+
+printDef : List Definitions -> List (Html Msg)
+printDef liste =
+  case liste of
+    [] -> [text ""]
+    (x::xs) -> li [style "Font" "italic"] [text (x.definition)] :: printDef xs
 
 
 vERIF_MOT = "test"
