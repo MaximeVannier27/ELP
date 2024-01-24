@@ -79,5 +79,5 @@ func main() {
 	endTime := time.Now()
 
 	fmt.Println("Image traitée sauvegardée avec succès.")
-	fmt.Printf("Durée pour %s", endTime.Sub(startTime))
+	fmt.Printf("Durée %s", endTime.Sub(startTime))
 }
