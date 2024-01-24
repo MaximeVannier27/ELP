@@ -7,9 +7,9 @@ import (
 	"image"
 	"image/jpeg"
 	_ "image/jpeg"
-	"strings"
-
 	"io"
+	"strings"
+	"time"
 
 	"log"
 	"net"
@@ -55,6 +55,8 @@ func main() {
 		log.Fatal((err))
 	}
 
+	startTime := time.Now()
+
 	// RECEPTION DU RESULTAT ET RESTRUCTURATION EN JPEG
 
 	image_finale, err := jpeg.Decode(conn)
@@ -73,5 +75,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	endTime := time.Now()
+
 	fmt.Println("Image traitée sauvegardée avec succès.")
+	fmt.Printf("Durée pour %s", endTime.Sub(startTime))
 }
