@@ -17,6 +17,7 @@ import Html.Attributes exposing (value, type_, placeholder, style)
 import Html.Events exposing (..)
 import Http
 import Json.Decode exposing (Decoder, map2, field, string, at, list, map)
+import Random
 
 
 
@@ -39,8 +40,9 @@ main =
 
 type Model
   = Loading
+  | Loadingword String
   | Succes ModelType
-  | Failure Http.Error
+  | Failure Http.Error String
 
 type alias ModelType 
   = { definition : Package
@@ -53,7 +55,7 @@ type alias ModelType
 
 init : () -> (Model, Cmd Msg)
 init _ =
-  (Loading, getPackage)
+  (Loading, getAllWord)
 
 
 
@@ -61,7 +63,9 @@ init _ =
 
 
 type Msg
-  = GotPackage (Result Http.Error Package)
+  = GotRandom Int 
+  | GotWords (Result Http.Error String)
+  | GotPackage (Result Http.Error Package)
   | Change String
   | ToggleCheck
 
@@ -69,23 +73,35 @@ type Msg
 update : Msg -> Model -> (Model, Cmd Msg) 
 update msg model =
   case msg of
+    GotWords result ->
+      case result of 
+        Ok words ->
+          (Loadingword words, Random.generate GotRandom (Random.int 1 1000))
+        Err code -> (Failure code "1", Cmd.none)
+    GotRandom number ->
+        case model of 
+          Loadingword words ->
+            (Loading, getPackage(getElementAtIndex number (String.split " " words)))
+          _ -> (Loading, Cmd.none)
     GotPackage result ->
       case result of
         Ok package ->
           (Succes  (ModelType package "" False), Cmd.none)
-        Err code -> (Failure code, Cmd.none)
+        Err code -> (Failure code "2", Cmd.none)
     Change newContent ->
         case model of
             Succes modeltype ->
                 (Succes {modeltype | content = newContent} , Cmd.none)
             Loading -> (Loading, Cmd.none)
-            Failure code -> (Failure code, Cmd.none)
+            Loadingword words -> (Loadingword words, Cmd.none)
+            Failure code id -> (Failure code id, Cmd.none)
     ToggleCheck ->
         case model of
             Succes modeltype ->
                 (Succes {modeltype | isChecked = not modeltype.isChecked}, Cmd.none)
             Loading -> (Loading, Cmd.none)
-            Failure code -> (Failure code, Cmd.none)
+            Loadingword words -> (Loadingword words, Cmd.none)
+            Failure code id -> (Failure code id, Cmd.none)
 
 
 -- SUBSCRIPTIONS
@@ -115,7 +131,8 @@ view model =
                     ] ]
             ]
     Loading -> text "Loading..."
-    Failure code -> text (errorToString code)
+    Loadingword words -> text "Loading..."
+    Failure code id -> text (errorToString code id)
 
 printPackage : Package -> Html Msg
 printPackage {word, meanings} = div [] [ ul [] (printMeanings meanings)]
@@ -133,17 +150,19 @@ printDef liste =
     (x::xs) -> li [style "Font" "italic"] [text (x.definition)] :: printDef xs
 
 
-vERIF_MOT = "test"
-dECOUVERTE_MOT = "test"
 
 -- HTTP
 
-
-
-getPackage : Cmd Msg
-getPackage =
+getAllWord : Cmd Msg
+getAllWord = 
   Http.get
-    { url = "https://api.dictionaryapi.dev/api/v2/entries/en/" ++ "word"
+    { url = "\\static\\mots.txt"
+    , expect = Http.expectString GotWords}
+
+getPackage : String -> Cmd Msg
+getPackage word =
+  Http.get
+    { url = "https://api.dictionaryapi.dev/api/v2/entries/en/" ++ word
     , expect = Http.expectJson GotPackage mainDecoder
     }
 
@@ -180,26 +199,33 @@ definitionsDecoder =
     map Definitions
         (field "definition" string)
 
+getElementAtIndex : Int -> List String -> String 
+getElementAtIndex index liste =
+  Maybe.withDefault "" (List.drop index liste |> List.head)
+
+
+
+
 
 -- Error
 
-errorToString : Http.Error -> String
-errorToString error =
+errorToString : Http.Error -> String -> String
+errorToString error id =
     case error of
         Http.BadUrl url ->
-            "The URL " ++ url ++ " was invalid"
+            "The URL " ++ url ++ " was invalid" ++ id
         Http.Timeout ->
-            "Unable to reach the server, try again"
+            "Unable to reach the server, try again" ++ id
         Http.NetworkError ->
-            "Unable to reach the server, check your network connection"
+            "Unable to reach the server, check your network connection" ++ id
         Http.BadStatus 500 ->
-            "The server had a problem, try again later"
+            "The server had a problem, try again later" ++ id
         Http.BadStatus 400 ->
-            "Verify your information and try again"
+            "Verify your information and try again" ++ id
         Http.BadStatus x ->
-            "Unknown error with status " ++ (String.fromInt x)
+            "Unknown error with status " ++ (String.fromInt x) ++ id
         Http.BadBody errorMessage ->
-            errorMessage
+            errorMessage ++ id
 
 
 
