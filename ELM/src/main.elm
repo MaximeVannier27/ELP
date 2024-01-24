@@ -156,7 +156,7 @@ printDef liste =
 getAllWord : Cmd Msg
 getAllWord = 
   Http.get
-    { url = "\\static\\mots.txt"
+    { url = "https://raw.githubusercontent.com/MaximeVannier27/ELP/main/ELM/static/mots.txt"
     , expect = Http.expectString GotWords}
 
 getPackage : String -> Cmd Msg

@@ -6217,7 +6217,7 @@ var $elm$http$Http$get = function (r) {
 var $author$project$Main$getAllWord = $elm$http$Http$get(
 	{
 		expect: $elm$http$Http$expectString($author$project$Main$GotWords),
-		url: '..\\static\\mots.txt'
+		url: 'https://raw.githubusercontent.com/MaximeVannier27/ELP/main/ELM/static/mots.txt'
 	});
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2($author$project$Main$Loading, $author$project$Main$getAllWord);
@@ -6227,9 +6227,10 @@ var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Main$subscriptions = function (model) {
 	return $elm$core$Platform$Sub$none;
 };
-var $author$project$Main$Failure = function (a) {
-	return {$: 'Failure', a: a};
-};
+var $author$project$Main$Failure = F2(
+	function (a, b) {
+		return {$: 'Failure', a: a, b: b};
+	});
 var $author$project$Main$GotRandom = function (a) {
 	return {$: 'GotRandom', a: a};
 };
@@ -6525,7 +6526,7 @@ var $author$project$Main$update = F2(
 				} else {
 					var code = result.a;
 					return _Utils_Tuple2(
-						$author$project$Main$Failure(code),
+						A2($author$project$Main$Failure, code, '1'),
 						$elm$core$Platform$Cmd$none);
 				}
 			case 'GotRandom':
@@ -6553,7 +6554,7 @@ var $author$project$Main$update = F2(
 				} else {
 					var code = result.a;
 					return _Utils_Tuple2(
-						$author$project$Main$Failure(code),
+						A2($author$project$Main$Failure, code, '2'),
 						$elm$core$Platform$Cmd$none);
 				}
 			case 'Change':
@@ -6576,8 +6577,9 @@ var $author$project$Main$update = F2(
 							$elm$core$Platform$Cmd$none);
 					default:
 						var code = model.a;
+						var id = model.b;
 						return _Utils_Tuple2(
-							$author$project$Main$Failure(code),
+							A2($author$project$Main$Failure, code, id),
 							$elm$core$Platform$Cmd$none);
 				}
 			default:
@@ -6599,8 +6601,9 @@ var $author$project$Main$update = F2(
 							$elm$core$Platform$Cmd$none);
 					default:
 						var code = model.a;
+						var id = model.b;
 						return _Utils_Tuple2(
-							$author$project$Main$Failure(code),
+							A2($author$project$Main$Failure, code, id),
 							$elm$core$Platform$Cmd$none);
 				}
 		}
@@ -6610,30 +6613,31 @@ var $author$project$Main$Change = function (a) {
 };
 var $author$project$Main$ToggleCheck = {$: 'ToggleCheck'};
 var $elm$html$Html$div = _VirtualDom_node('div');
-var $author$project$Main$errorToString = function (error) {
-	switch (error.$) {
-		case 'BadUrl':
-			var url = error.a;
-			return 'The URL ' + (url + ' was invalid');
-		case 'Timeout':
-			return 'Unable to reach the server, try again';
-		case 'NetworkError':
-			return 'Unable to reach the server, check your network connection';
-		case 'BadStatus':
-			switch (error.a) {
-				case 500:
-					return 'The server had a problem, try again later';
-				case 400:
-					return 'Verify your information and try again';
-				default:
-					var x = error.a;
-					return 'Unknown error with status ' + $elm$core$String$fromInt(x);
-			}
-		default:
-			var errorMessage = error.a;
-			return errorMessage;
-	}
-};
+var $author$project$Main$errorToString = F2(
+	function (error, id) {
+		switch (error.$) {
+			case 'BadUrl':
+				var url = error.a;
+				return 'The URL ' + (url + (' was invalid' + id));
+			case 'Timeout':
+				return 'Unable to reach the server, try again' + id;
+			case 'NetworkError':
+				return 'Unable to reach the server, check your network connection' + id;
+			case 'BadStatus':
+				switch (error.a) {
+					case 500:
+						return 'The server had a problem, try again later' + id;
+					case 400:
+						return 'Verify your information and try again' + id;
+					default:
+						var x = error.a;
+						return 'Unknown error with status ' + ($elm$core$String$fromInt(x) + id);
+				}
+			default:
+				var errorMessage = error.a;
+				return _Utils_ap(errorMessage, id);
+		}
+	});
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$label = _VirtualDom_node('label');
@@ -6837,8 +6841,9 @@ var $author$project$Main$view = function (model) {
 			return $elm$html$Html$text('Loading...');
 		default:
 			var code = model.a;
+			var id = model.b;
 			return $elm$html$Html$text(
-				$author$project$Main$errorToString(code));
+				A2($author$project$Main$errorToString, code, id));
 	}
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
