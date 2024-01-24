@@ -3,7 +3,6 @@
 package main
 
 import (
-	//"bytes"
 	"fmt"
 	"image"
 	"image/jpeg"
@@ -51,7 +50,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//var buffer bytes.Buffer
 	err = jpeg.Encode(conn, image, nil)
 	if err != nil {
 		log.Fatal((err))

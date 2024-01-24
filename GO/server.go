@@ -123,7 +123,6 @@ func handleConnection(conn net.Conn, dict_images *Safemap, ch_travail chan [2]in
 	str_rayonFloutage = strings.TrimSuffix(str_rayonFloutage, "\n")
 	rayonFloutage, err := strconv.Atoi(str_rayonFloutage)
 
-	// Now 'rayonFloutage' contains the blurring radius as a string (including the '\n')
 	fmt.Println("Rayon floutage reçu :", rayonFloutage)
 
 	// Fermer la connexion quand c'est terminé
