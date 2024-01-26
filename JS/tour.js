@@ -1,39 +1,33 @@
-const prompt = require("prompt")(); // Utilisation de prompt-sync pour la saisie synchrone
+const prompt = require("prompt");
+const fs = require("fs");
+prompt.start();
 
-function genererNombreSecret() {
-  return Math.floor(Math.random() * 100) + 1; // Génère un nombre aléatoire entre 1 et 100
+
+
+function tour(num_joueur,main,sac) {
+    console.log("Votre tour !");
+    prompt.get(['Choix'], function (err,result_choix) {
+        if (result_choix.Choix === "pioche") {
+            console.log('Vous avez choisi de piocher une lettre');
+            pioche(1,sac)
+
+        } else if (result_choix.Choix === "change") {
+            console.log("Vous avez choisi d'échanger 3 de vos lettres");
+            console.log("Voici votre main:");
+            console.log(main);
+            main += pioche(3,sac);
+            prompt.get(["Lettre_1","Lettre_2","Lettre_3"], function (_,result_lettre) {
+                sac += [,] + main.splice(result_lettre.Lettre_1,1);
+                sac += [,] + main.splice(result_lettre.Lettre_2,1);
+                sac += [,] + main.splice(result_lettre.Lettre_3,1);
+            });
+            console.log("Votre nouvelle main:\n" + main)
+
+            
+        } else{
+            console.log(err);
+        }
+    });
 }
 
-function devinerNombreJoueur(joueur) {
-  const proposition = prompt(`Joueur ${joueur}, veuillez deviner le nombre :`);
-  return Number(proposition);
-}
-
-function jouer() {
-  const nombreSecret = genererNombreSecret();
-  let tourJoueur = 1;
-
-  while (true) {
-    const propositionJoueur1 = devinerNombreJoueur(1);
-    if (propositionJoueur1 === nombreSecret) {
-      console.log(`Félicitations Joueur 1 ! Vous avez trouvé le nombre secret.`);
-      break;
-    } else {
-      console.log(`Joueur 1: Mauvaise proposition. Essayez encore.`);
-    }
-
-    const propositionJoueur2 = devinerNombreJoueur(2);
-    if (propositionJoueur2 === nombreSecret) {
-      console.log(`Félicitations Joueur 2 ! Vous avez trouvé le nombre secret.`);
-      break;
-    } else {
-      console.log(`Joueur 2: Mauvaise proposition. Essayez encore.`);
-    }
-
-    tourJoueur++;
-  }
-
-  console.log(`Le nombre secret était ${nombreSecret}. La partie a pris fin après ${tourJoueur} tours.`);
-}
-
-jouer();
+tour(1)
