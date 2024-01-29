@@ -39,10 +39,16 @@ lettres = [["A", 14], ["B", 4], ["C", 7], ["D", 5], ["E", 19]
 
 function sac(lettres) {
     liste = []
-    for lettre in lettres :
-        for nombre in range(listre[1]-1):
-            
+    for (lettre in lettres) {
+        for (nombre in range(lettres[1]-1)) {
+            liste.append(lettre["0"])
+        }
+    }
+ 
+    return liste
 }
+
+console.log(sac(lettres))   
 
 function pioche(nombre,sac){
     if (nombre == 0) {
