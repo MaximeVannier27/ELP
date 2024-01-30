@@ -1,4 +1,4 @@
 # ignorer les fichier elm
-\ELM\src\package-lock.json
-\ELM\src\node_modules
-\ELM\src\package.json
+/ELM/src/package-lock.json
+/ELM/src/node_modules
+/ELM/src/package.json
