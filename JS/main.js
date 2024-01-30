@@ -103,7 +103,7 @@ function fin(plato) {
                     points += Math.pow(j+1, 2) 
                 }
         }    
-    }["","","","","","","","",""]
+    }
     return points
 }
 
