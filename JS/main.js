@@ -136,7 +136,7 @@ function initialiserMatrice(nbLignes, nbColonnes, valeurParDefaut = 0) {
     for (let i = 0; i < nbLignes; i++) {
         matrice[i] = [];
         for (let j = 0; j < nbColonnes; j++) {
-            matrice[i][j] = valeurParDefaut;
+            matrice[i][j] = "";
         }
     }
 
@@ -155,6 +155,16 @@ function afficherMatrice(matrice) {
         console.log(ligne);
     }
 }
+
+plato_joueur1 = [["A","B","C","D","","","","",""],
+                ["","","","","","","","",""],
+                ["","","","","","","","",""],
+                ["","","","","","","","",""],
+                ["","","","","","","","",""],
+                ["","","","","","","","",""],
+                ["","","","","","","","",""],
+                ["","","","","","","","",""]
+            ]
 
 console.log("Matrice du joueur 1:");
 afficherMatrice(plato_joueur1);
@@ -198,7 +208,36 @@ main_joueur2 += [,"S"]
 console.log(main_joueur1);
 console.log(main_joueur2);
 
+function fin(plato) {
+    points = 0
+    for (let i = 0; i < 8; i++) {
+        for (let j = 2; j < 9; j++) {
+            if (plato[i][j] !== "")
+                {
+                    points += Math.pow(j+1, 2) 
+                }
+            }    
+    }
+    return points
+}
+
+console.log(fin(plato_joueur1))
 plato_joueur2[0] = ["C","A","R","I","E","S",0,0]
 
 
 jarnac(main_joueur1,main_joueur2,plato_joueur1,plato_joueur2,valise)
+
+function fin(plato) {
+    points = 0
+    for (let i = 0; i < 8; i++) {
+        for (let j = 2; j < 9; j++) {
+            if (plato[i][j] !== "")
+                {
+                    points += Math.pow(j+1, 2) 
+                }
+        }    
+    }
+    return points
+}
+
+console.log(fin(plato_joueur1))
