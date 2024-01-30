@@ -1,5 +1,5 @@
 
-function initialiserMatrice(nbLignes, nbColonnes) {
+function initialiserMatrice(nbLignes, nbColonnes, valeurParDefaut = 0) {
     let matrice = [];
 
     for (let i = 0; i < nbLignes; i++) {
@@ -75,6 +75,24 @@ main_joueur2 = main_joueur2.concat(pioche(6, valise));
 
 console.log(main_joueur1);
 console.log(main_joueur2);
+
+function fin(plato) {
+    points = 0
+    for (let i = 0; i < 8; i++) {
+        for (let j = 2; j < 9; j++) {
+            if (plato[i][j] !== "")
+                {
+                    points += Math.pow(j+1, 2) 
+                }
+            }    
+    }
+    return points
+}
+
+console.log(fin(plato_joueur1))
+
+
+tour(main_joueur1,main_joueur2,plato_joueur1,plato_joueur2,valise)
 
 function fin(plato) {
     points = 0
