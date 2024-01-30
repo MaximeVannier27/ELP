@@ -43,8 +43,6 @@ function estListePresenteRecursif(listePetite, listeGrande, indexPetite = 0, ind
     return false;
   }
 
-
-
 function jarnac(main_adverse,tapis_adverse,tapis_perso) {
     console.log("Main adverse:\n" + main_adverse)
     console.log("Tapis adverse:\n" + tapis_adverse)
@@ -104,7 +102,7 @@ function jarnac(main_adverse,tapis_adverse,tapis_perso) {
 }
 
 
-function tour(num_joueur,main,sac) {
+function tour(main,main_adverse,tapis_perso,tapis_adverse,sac) {
     console.log("Votre tour !");
     jarnac(main_adverse,tapis_adverse,tapis_perso);
     prompt.get(['Choix'], function (err,result_choix) {
@@ -131,5 +129,3 @@ function tour(num_joueur,main,sac) {
     console.log("suite du tour")
 
 }
-
-tour(1)
