@@ -45,43 +45,60 @@ function estListePresenteRecursif(listePetite, listeGrande, indexPetite = 0, ind
 
 
 
-function jarnac(main_adverse,tapis_adverse,main_perso,tapis_perso) {
+function jarnac(main_adverse,tapis_adverse,tapis_perso) {
     console.log("Main adverse:\n" + main_adverse)
     console.log("Tapis adverse:\n" + tapis_adverse)
     console.log("Double Jarnac, Jarnac ou rien ? (d/j/r)\n")
     prompt.get(["Jarnac"], function(_,resultat_jarnac) {
         if (resultat_jarnac.Jarnac === "d") {
-            //code pour tenter un double jarnac
             c = 0;
             while (c<2) {
-                console.log("Quel mot voulez vous remplacer et par quoi ?")
+                console.log("Quel mot voulez vous remplacer et par quoi ?");
                 prompt.get(["Mot_source","Mot_cible"], function(_,resultat_mot) {
                 if (!(resultat_mot.Mot_source in tapis_adverse)) {
                     console.log("Mot source invalide: non présent sur le tapis.");
-                    continue
                 }
                 else if (estListePresenteRecursif(trouverLettresDifferentes(resultat_mot.Mot_source,resultat_mot.Mot_cible),main_adverse)) {
                     console.log("Bien joué ! Vous volez le mot de votre adversaire.");
                     c++
-                    index = main_adverse.indexOf(resultat_mot.Mot_source);
-                    for (let i=0;i<main_perso.length;i++) {
-                        if (main_perso[i] == []) {
-                            for 
+                    index = tapis_adverse.indexOf(resultat_mot.Mot_source);
+                    tapis_adverse[index] = resultat_mot.Mot_cible 
+                    for (let i=0;i<tapis_perso.length;i++) {
+                        if (tapis_perso[i] == []) {
+                            tapis_perso[i] = main_adverse.splice(index,1);
                         }
                     }
-
                 }
-
+                else {
+                    console.log("Erreur: le mot cible n'est pas faisable à partir de la main adverse")
                 }
-                })
-                }
+                });
             }
         }
         else if(resultat_jarnac.Jarnac === "j") {
-            //code pour tenter un jarnac
+            console.log("Quel mot voulez vous remplacer et par quoi ?");
+            prompt.get(["Mot_source","Mot_cible"], function(_,resultat_mot) {
+            if (!(resultat_mot.Mot_source in tapis_adverse)) {
+                console.log("Mot source invalide: non présent sur le tapis.");
+            }
+            else if (estListePresenteRecursif(trouverLettresDifferentes(resultat_mot.Mot_source,resultat_mot.Mot_cible),main_adverse)) {
+                console.log("Bien joué ! Vous volez le mot de votre adversaire.");
+                c++
+                index = tapis_adverse.indexOf(resultat_mot.Mot_source);
+                tapis_adverse[index] = resultat_mot.Mot_cible 
+                for (let i=0;i<tapis_perso.length;i++) {
+                    if (tapis_perso[i] == []) {
+                        tapis_perso[i] = tapis_adverse.splice(index,1);
+                    }
+                }
+            }
+            else {
+                console.log("Erreur: le mot cible n'est pas faisable à partir de la main adverse")
+            }
+            });
         }
         else {
-            //pas de jarnac
+            console.log("Pas de Jarnac")
         }
     })
 }
@@ -89,6 +106,7 @@ function jarnac(main_adverse,tapis_adverse,main_perso,tapis_perso) {
 
 function tour(num_joueur,main,sac) {
     console.log("Votre tour !");
+    jarnac(main_adverse,tapis_adverse,tapis_perso);
     prompt.get(['Choix'], function (err,result_choix) {
         if (result_choix.Choix === "pioche") {
             console.log('Vous avez choisi de piocher une lettre');
@@ -105,7 +123,6 @@ function tour(num_joueur,main,sac) {
                 sac += [,] + main.splice(result_lettre.Lettre_3,1);
             });
             console.log("Votre nouvelle main:\n" + main)
-
             
         } else{
             console.log(err);
