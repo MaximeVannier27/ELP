@@ -1,5 +1,7 @@
 # Projet GO : traitement d'images
 
+## Description du projet
+
 On fait du flou gaussien, sur chaque pixel de l'image qu'on récupère, en moyennant la valeur RGBA du pixel avec celles de ses voisins. On pourra choisir le rayon du moyennage. Voici le premier résultat dont nous sommes fier :
 <Image non disponible, supprimée par MaximeVannier>
 
@@ -8,4 +10,4 @@ Ensuite une go routine FranceTravail atribué à ce client va envoyer les numér
 
 ## Utilisation
 
-Lancer server.go dans une terminal, puis dans d'autres terminaux, lancer client.go et donner l'URL de l'image que vous souhaitez flouter et dans un second temps le rayon de floutage que vous souhaitez appliquer sur l'image
+Lancer server.go dans une terminal, puis dans d'autres terminaux, lancer client.go et donner l'URL de l'image que vous souhaitez flouter et dans un second temps le rayon de floutage que vous souhaitez appliquer sur l'image. Une fois le floutage opérer vous recevrez votre image flouté sous le nom : <i>"NomDeVotreImage_floutée.jpeg"
