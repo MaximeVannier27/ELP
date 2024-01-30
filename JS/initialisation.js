@@ -31,30 +31,37 @@ afficherMatrice(plato_joueur1);
 console.log("\nMatrice du joueur 2:");
 afficherMatrice(plato_joueur2);
 
-lettres = [["A", 14], ["B", 4], ["C", 7], ["D", 5], ["E", 19]
+lettres_jeu = [["A", 14], ["B", 4], ["C", 7], ["D", 5], ["E", 19],
 ["F", 2], ["G", 4], ["H", 2], ["I", 11], ["J", 1], ["K", 1],
 ["L", 6], ["M", 5], ["N", 9], ["O", 8], ["P", 4], ["Q", 1],
 ["R", 10], ["S", 7], ["T", 9], ["U", 8], ["V", 2], ["W, 1"],
 ["X", 1], ["Y",1], ["Z", 2]]
 
 function sac(lettres) {
-    liste = []
-    for (lettre in lettres) {
-        for (nombre in range(lettres[1]-1)) {
-            liste.append(lettre["0"])
+    let liste = [];
+    for (let [lettre, nombre] of lettres) {
+        for (let i = 0; i < nombre; i++) {
+            liste.push(lettre);
         }
     }
- 
-    return liste
+    return liste;
 }
 
-console.log(sac(lettres))   
-
-function pioche(nombre,sac){
-    if (nombre == 0) {
-        return []
-    }
-    else {
-        return [, sac.slice(Math.floor(Math.random() * (sac.length)), 1)[0]] + pioche(nombre-1, sac)
+function pioche(nombre, sac) {
+    if (nombre === 0) {
+        return [];
+    } else {
+        let cartePiochee = sac[Math.floor(Math.random() * sac.length)];
+        return [cartePiochee].concat(pioche(nombre - 1, sac));
     }
 }
+
+let main_joueur1 = [];
+let main_joueur2 = [];
+let valise = sac(lettres_jeu);
+
+main_joueur1 = main_joueur1.concat(pioche(6, valise));
+main_joueur2 = main_joueur2.concat(pioche(6, valise));
+
+console.log(main_joueur1);
+console.log(main_joueur2);
