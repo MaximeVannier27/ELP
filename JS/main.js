@@ -103,7 +103,6 @@ function simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
                         main_adverse.splice(index,1)
                     }
                     console.log("Bien joué ! Vous volez le mot de votre adversaire.");
-                    console.log(tapis_perso)
                     tapis_adverse[resultat_mot.Ligne_source] = ["","","","","","","","",""]
                     break
                 }
@@ -133,7 +132,6 @@ function double(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
                         main_adverse.splice(index,1)
                     }
                     console.log("Bien joué ! Vous volez le mot de votre adversaire.");
-                    console.log(tapis_perso)
                     tapis_adverse[resultat_mot.Ligne_source] = ["","","","","","","","",""]
                     break
                 }
@@ -183,7 +181,6 @@ function jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
 }
 
 function action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
-    console.log(tapis_perso)
     console.log("Votre tour !");
     console.log("Votre main:\n" + main_perso);
     console.log("Votre tapis:");
@@ -245,22 +242,6 @@ function afficherMatrice(matrice) {
     }
 }
 
-plato_joueur1 = [["A","B","C","","","","","",""],
-                ["M","L","O","","","","","",""],
-                ["","","","","","","","",""],
-                ["","","","","","","","",""],
-                ["","","","","","","","",""],
-                ["","","","","","","","",""],
-                ["","","","","","","","",""],
-                ["","","","","","","","",""]
-            ]
-
-console.log("Matrice du joueur 1:");
-afficherMatrice(plato_joueur1);
-
-console.log("\nMatrice du joueur 2:");
-afficherMatrice(plato_joueur2);
-
 lettres_jeu = [["A", 14], ["B", 4], ["C", 7], ["D", 5], ["E", 19],
 ["F", 2], ["G", 4], ["H", 2], ["I", 11], ["J", 1], ["K", 1],
 ["L", 6], ["M", 5], ["N", 9], ["O", 8], ["P", 4], ["Q", 1],
@@ -293,11 +274,6 @@ let valise = sac(lettres_jeu);
 
 main_joueur1 = main_joueur1.concat(pioche(6, valise));
 main_joueur2 = main_joueur2.concat(pioche(6, valise));
-main_joueur2.splice(5,1)
-main_joueur2 = main_joueur2.concat(["S"])
-
-console.log(main_joueur1);
-console.log(main_joueur2);
 
 
 function comptage(plato) {
@@ -353,11 +329,6 @@ function gagnant(plato1, plato2) {
 
 }
 
-console.log(comptage(plato_joueur1))
-plato_joueur2[0] = ["C","A","R","I","E","S",0,0]
 
 
 jarnac(main_joueur1,main_joueur2,plato_joueur1,plato_joueur2,valise)
-
-
-//console.log(fin(plato_joueur1))
