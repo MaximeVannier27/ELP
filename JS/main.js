@@ -2,15 +2,51 @@ const prompt = require("prompt");
 const fs = require("fs");
 prompt.start();
 
-/*function action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
-    console.log("Voulez vous jouer ou passer ? : (jouer/passer)")
-    prompt.get(["Choix"], function(_,resultat_choix) {
-        if (resultat_choix.Choix === "jouer") {
-            jouer(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
+
+
+function nouveau(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
+    console.log("Quel mot veux-tu poser ?")
+    prompt.get(["Mot"], function (_,resultat_nouveau) {
+        liste_diff = trouverLettresDifferentes(main_perso,resultat_nouveau.Mot)
+        if (liste_diff.lenght === 0) {
+            for (let i=0;i<tapis_perso.length;i++) {
+                if (tapis_perso[i].every((element,index) => element === "")) {
+                    for (let j=0;j<resultat_nouveau.Mot.length;j++) {
+                        tapis_perso[i][j] = resultat_nouveau.Mot[j]
+                    }
+                    for (let k=0;k<liste_diff.length;k++) {
+                        index = main_perso.indexOf(list_diff[k])
+                        main_perso.splice(index,1)
+                    }
+                    console.log("Bien joué ! Vous avez posé un nouveau mot");
+                    main_perso.concat(pioche(1,sac))
+                    break
+                }
+            }
         }
     })
 
-}*/
+
+
+}
+
+
+
+
+function action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
+    console.log("Voulez vous jouer ou passer ? : (nouveau/modifier/passer)")
+    prompt.get(["Choix"], function (_,resultat_choix) {
+        if (resultat_choix.Choix === "nouveau") {
+            nouveau(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
+        } else if (resultat_choix.Choix === "modifier") {
+            modifier(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
+        } else if (resultat_choix.Choix === "passer") {
+            console.log("Tour suivant")
+            jarnac(main_adverse,main_perso,tapis_adverse,tapis_perso,sac)
+        }
+    })
+
+}
 
 function trouverLettresDifferentes(list_verif, mot_verif) {
     list_temp = list_verif
@@ -25,7 +61,7 @@ function trouverLettresDifferentes(list_verif, mot_verif) {
         }
     }
     return lettresDifferentes
-  }
+}
 
 function simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     console.log("Quelle ligne voulez vous remplacer et par quoi ?");
@@ -99,7 +135,7 @@ function estListePresenteRecursif(listePetite, listeGrande, indexPetite = 0, ind
     }
     // Si aucun élément correspondant n'est trouvé, la liste n'est pas présente
     return false;
-  }
+}
 
 function jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     console.log("Main adverse:\n" + main_adverse);
