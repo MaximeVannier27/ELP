@@ -191,6 +191,7 @@ function action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
         if (result_choix.Choix === "pioche") {
             console.log('Vous avez choisi de piocher une lettre');
             main_perso = main_perso.concat(pioche(1,sac));
+            action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         } 
         else if (result_choix.Choix === "change") {
             console.log("Vous avez choisi d'échanger 3 de vos lettres");
@@ -202,6 +203,7 @@ function action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
                 sac = sac.concat(main_perso.splice(result_lettre.Lettre_3,1));
                 main_perso = main_perso.concat(pioche(3,sac));
                 console.log("Votre nouvelle main:\n" + main_perso);
+                action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
             });  
         } 
         else {
