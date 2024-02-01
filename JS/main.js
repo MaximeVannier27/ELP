@@ -23,7 +23,11 @@ function nouveau(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
                     break
                 }
             }
+        } else {
+            console.log("Ce mot n'est pas jouable.")
+            action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         }
+
     })
 
 
@@ -34,23 +38,21 @@ function modifier(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     console.log("Quel mot voulez vous modifier (numero de ligne)")
     console.log("Quel est le mot cible ?")
     prompt.get(["Ligne","Cible"], function (_,resultat_modif) {
-
-        list_diff = trouverLettresDifferentes(list_source,resultat_mot.Mot_cible)
-        if (estListePresenteRecursif(list_diff,main_adverse) && list_diff.length > 0) {
-            for (let i=0;i<tapis_perso.length;i++) {
-                if (tapis_perso[i].every((element,index) => element === "")) {
-                    for (let j=0;j<resultat_mot.Mot_cible.length;j++) {
-                        tapis_perso[i][j] = resultat_mot.Mot_cible[j]
-                    }
-                    for (let k=0;k<liste_diff.length;k++) {
-                        index = main_adverse.indexOf(list_diff[k])
-                        main_adverse.splice(index,1)
-                    }
-                    console.log("Bien joué ! Vous volez le mot de votre adversaire.");
-                    tapis_adverse[resultat_mot.Ligne_source] = ["","","","","","","","",""]
-                    break
-                }
+        list_source = tapis_perso[resultat_modif.Ligne]
+        list_diff = trouverLettresDifferentes(list_source,resultat_modif.Cible)
+        if (estListePresenteRecursif(list_diff,main_perso) && list_diff.length > 0 ) {
+            for (let j=0;j<resultat_mot.Mot_cible.length;j++) {
+                tapis_perso[resultat_modif.Ligne][j] = resultat_modif.Cible[j]
             }
+            for (let k=0;k<list_diff.length;k++) {
+                index = main_perso.indexOf(list_diff[k])
+                main_perso.splice(index,1)
+            }
+            console.log("Bien joué ! Vous avez modifié votre mot.");
+        } else {
+            console.log("Ce mot n'est pas modifiable")
+            action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
+        }
     })
 }
 
