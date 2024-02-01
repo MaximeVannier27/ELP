@@ -32,17 +32,18 @@ function simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     prompt.get(["Ligne_source","Mot_cible"], function(_,resultat_mot) {
         list_source = tapis_adverse[resultat_mot.Ligne_source]
         list_diff = trouverLettresDifferentes(list_source,resultat_mot.Mot_cible)
-        if (estListePresenteRecursif(list_diff,main_adverse) && list_diff.length > 0) {
+        if (estListePresenteRecursif(list_diff,main_adverse) && list_diff.length > 0 && resultat_mot.Mot_cible.length > 2) {
             for (let i=0;i<tapis_perso.length;i++) {
                 if (tapis_perso[i].every((element,index) => element === "")) {
                     for (let j=0;j<resultat_mot.Mot_cible.length;j++) {
                         tapis_perso[i][j] = resultat_mot.Mot_cible[j]
                     }
-                    for (let k=0;k<liste_diff.length;k++) {
+                    for (let k=0;k<list_diff.length;k++) {
                         index = main_adverse.indexOf(list_diff[k])
                         main_adverse.splice(index,1)
                     }
                     console.log("Bien joué ! Vous volez le mot de votre adversaire.");
+                    console.log(tapis_perso)
                     tapis_adverse[resultat_mot.Ligne_source] = ["","","","","","","","",""]
                     break
                 }
@@ -51,7 +52,7 @@ function simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
         }
         else {
             console.log("Erreur: le mot cible n'est pas faisable à partir de la main adverse")
-            jarnac(main_perso,main_adverse,tapis_adverse,tapis_perso)
+            jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         }
         });
 }
@@ -67,20 +68,21 @@ function double(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
                     for (let j=0;j<resultat_mot.Mot_cible.length;j++) {
                         tapis_perso[i][j] = resultat_mot.Mot_cible[j]
                     }
-                    for (let k=0;k<liste_diff.length;k++) {
+                    for (let k=0;k<list_diff.length;k++) {
                         index = main_adverse.indexOf(list_diff[k])
                         main_adverse.splice(index,1)
                     }
                     console.log("Bien joué ! Vous volez le mot de votre adversaire.");
+                    console.log(tapis_perso)
                     tapis_adverse[resultat_mot.Ligne_source] = ["","","","","","","","",""]
                     break
                 }
             }
-            simple(main_perso,main_adverse,tapis_adverse,tapis_perso,sac)
+            simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         }
         else {
             console.log("Erreur: le mot cible n'est pas faisable à partir de la main adverse")
-            jarnac(main_perso,main_adverse,tapis_adverse,tapis_perso)
+            jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         }
         });
 }
@@ -121,6 +123,7 @@ function jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
 }
 
 function action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
+    console.log(tapis_perso)
     console.log("Votre tour !");
     console.log("Votre main:\n" + main_perso);
     console.log("Votre tapis:");
@@ -129,17 +132,17 @@ function action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     prompt.get(['Choix'], function (err,result_choix) {
         if (result_choix.Choix === "pioche") {
             console.log('Vous avez choisi de piocher une lettre');
-            main_perso.concat(pioche(1,sac));
+            main_perso = main_perso.concat(pioche(1,sac));
         } 
         else if (result_choix.Choix === "change") {
             console.log("Vous avez choisi d'échanger 3 de vos lettres");
             console.log("Voici votre main:");
             console.log(main_perso);
             prompt.get(["Lettre_1","Lettre_2","Lettre_3"], function (_,result_lettre) {
-                sac.concat(main_perso.splice(result_lettre.Lettre_1,1));
-                sac.concat(main_perso.splice(result_lettre.Lettre_2,1));
-                sac.concat(main_perso.splice(result_lettre.Lettre_3,1));
-                main_perso.concat(pioche(3,sac));
+                sac = sac.concat(main_perso.splice(result_lettre.Lettre_1,1));
+                sac = sac.concat(main_perso.splice(result_lettre.Lettre_2,1));
+                sac = sac.concat(main_perso.splice(result_lettre.Lettre_3,1));
+                main_perso = main_perso.concat(pioche(3,sac));
                 console.log("Votre nouvelle main:\n" + main_perso);
             });  
         } 
@@ -228,7 +231,8 @@ let valise = sac(lettres_jeu);
 
 main_joueur1 = main_joueur1.concat(pioche(6, valise));
 main_joueur2 = main_joueur2.concat(pioche(6, valise));
-main_joueur2 += [,"S"]
+main_joueur2.splice(5,1)
+main_joueur2 = main_joueur2.concat(["S"])
 
 console.log(main_joueur1);
 console.log(main_joueur2);
