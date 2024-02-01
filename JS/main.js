@@ -180,8 +180,8 @@ function afficherMatrice(matrice) {
     }
 }
 
-plato_joueur1 = [["A","B","C","D","","","","",""],
-                ["","","","","","","","",""],
+plato_joueur1 = [["A","B","C","","","","","",""],
+                ["M","L","O","","","","","",""],
                 ["","","","","","","","",""],
                 ["","","","","","","","",""],
                 ["","","","","","","","",""],
@@ -235,20 +235,24 @@ console.log(main_joueur2);
 
 function comptage(plato) {
     let points = 0;
-
     for (let i = 0; i < plato.length; i++) {
-        let longueur_mot = 0;
-        
-        for (let j = 0; j < plato[i].length; j++) {
-            if (plato[i][j] !== "") {
-                longueur_mot++;
-            } else {
-                break;
-            }
+        if (plato[i].every(element => element === "")) {
+            break;
         }
-        points += Math.pow(longueur_mot, 2);
-    }
 
+        if (plato[i][0] === "") {
+            continue;
+        }
+        let j = 0;
+        let longueur_mot = 0;
+        while (j < plato[i].length && plato[i][j] !== "") {
+            longueur_mot++;
+            j++;
+        }
+        if (longueur_mot > 2) {
+            points += Math.pow(longueur_mot, 2);
+        }
+    }
     return points;
 }
 
