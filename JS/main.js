@@ -19,7 +19,7 @@ function trouverLettresDifferentes(list_verif, mot_verif) {
     return lettresDifferentes
   }
 
-function simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac){
+function simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     console.log("Quel mot voulez vous remplacer et par quoi ?");
     prompt.get(["Ligne_source","Mot_cible"], function(_,resultat_mot) {
         list_source = tapis_adverse[resultat_mot.Ligne_source]
@@ -36,7 +36,7 @@ function simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac){
         }
         else {
             console.log("Erreur: le mot cible n'est pas faisable à partir de la main adverse")
-            jarnac(main_adverse,tapis_adverse,tapis_perso)
+            jarnac(main_perso,main_adverse,tapis_adverse,tapis_perso)
         }
         });
 }
@@ -55,11 +55,11 @@ function double(main_perso,main_adverse,tapis_perso,tapis_adverse,sac){
                     tapis_perso[i] = main_adverse.splice(index,1);
                 }
             }
-            simple(main_adverse,tapis_adverse,tapis_perso)
+            simple(main_perso,main_adverse,tapis_adverse,tapis_perso)
         }
         else {
             console.log("Erreur: le mot cible n'est pas faisable à partir de la main adverse")
-            jarnac(main_adverse,tapis_adverse,tapis_perso)
+            jarnac(main_perso,main_adverse,tapis_adverse,tapis_perso)
         }
         });
 }
@@ -82,15 +82,16 @@ function estListePresenteRecursif(listePetite, listeGrande, indexPetite = 0, ind
 
 function jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     console.log("Main adverse:\n" + main_adverse)
-    console.log("Tapis adverse:\n" + tapis_adverse)
+    console.log("Tapis adverse:\n")
+    afficherMatrice(tapis_adverse)
     console.log("Double Jarnac, Jarnac ou rien ? (d/j/r)\n")
     prompt.get(["Jarnac"], function(_,resultat_jarnac) {
         if (resultat_jarnac.Jarnac === "d") {
            double(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
-        }
+        } 
         else if(resultat_jarnac.Jarnac === "j") {
             simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
-        }
+        } 
         else {
             console.log("Pas de Jarnac")
             action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
@@ -101,25 +102,30 @@ function jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
 
 function action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     console.log("Votre tour !");
+    console.log("Votre main:\n" + main_perso)
+    console.log("Votre tapis:\n")
+    afficherMatrice(tapis_perso)
+    
 
     prompt.get(['Choix'], function (err,result_choix) {
         if (result_choix.Choix === "pioche") {
             console.log('Vous avez choisi de piocher une lettre');
-            main_perso += pioche(1,sac)
+            main_perso.concat(pioche(1,sac))
 
-        } else if (result_choix.Choix === "change") {
+        } 
+        else if (result_choix.Choix === "change") {
             console.log("Vous avez choisi d'échanger 3 de vos lettres");
             console.log("Voici votre main:");
             console.log(main_perso);
             prompt.get(["Lettre_1","Lettre_2","Lettre_3"], function (_,result_lettre) {
-                sac += [,] + main_perso.splice(result_lettre.Lettre_1,1);
-                sac += [,] + main_perso.splice(result_lettre.Lettre_2,1);
-                sac += [,] + main_perso.splice(result_lettre.Lettre_3,1);
-                main_perso += pioche(3,sac);
+                sac.concat(main_perso.splice(result_lettre.Lettre_1,1));
+                sac.concat(main_perso.splice(result_lettre.Lettre_2,1));
+                sac.concat(main_perso.splice(result_lettre.Lettre_3,1));
+                main_perso.concat(pioche(3,sac));
                 console.log("Votre nouvelle main:\n" + main_perso);
             });  
         } 
-        else{
+        else {
             console.log(err);
         }
     });
@@ -191,7 +197,8 @@ function sac(lettres) {
 function pioche(nombre, sac) {
     if (nombre === 0) {
         return [];
-    } else {
+    } 
+    else {
         let cartePiochee = sac[Math.floor(Math.random() * sac.length)];
         return [cartePiochee].concat(pioche(nombre - 1, sac));
     }
@@ -222,7 +229,7 @@ function fin(plato) {
 }
 
 console.log(fin(plato_joueur1))
-plato_joueur2[0] = ["C","A","R","I","E","S",0,0]
+plato_joueur2[0] = ["C","A","R","I","E","S","",""]
 
 
 jarnac(main_joueur1,main_joueur2,plato_joueur1,plato_joueur2,valise)
