@@ -2,16 +2,15 @@ const prompt = require("prompt");
 const fs = require("fs");
 prompt.start();
 
-function action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
+/*function action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     console.log("Voulez vous jouer ou passer ? : (jouer/passer)")
     prompt.get(["Choix"], function(_,resultat_choix) {
         if (resultat_choix.Choix === "jouer") {
             jouer(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         }
-        else if (re)
     })
 
-}
+}*/
 
 function trouverLettresDifferentes(list_verif, mot_verif) {
     list_temp = list_verif
@@ -32,13 +31,20 @@ function simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     console.log("Quelle ligne voulez vous remplacer et par quoi ?");
     prompt.get(["Ligne_source","Mot_cible"], function(_,resultat_mot) {
         list_source = tapis_adverse[resultat_mot.Ligne_source]
-        if (estListePresenteRecursif(trouverLettresDifferentes(list_source,resultat_mot.Mot_cible),main_adverse)) {
-            console.log("Bien joué ! Vous volez le mot de votre adversaire.");
-            index = tapis_adverse.indexOf(resultat_mot.Mot_source);
-            tapis_adverse[index] = resultat_mot.Mot_cible 
+        list_diff = trouverLettresDifferentes(list_source,resultat_mot.Mot_cible)
+        if (estListePresenteRecursif(list_diff,main_adverse) && list_diff.length > 0) {
             for (let i=0;i<tapis_perso.length;i++) {
-                if (tapis_perso[i] == ["","","","","","","","",""]) {
-                    tapis_perso[i] = main_adverse.splice(index,1);
+                if (tapis_perso[i].every((element,index) => element === "")) {
+                    for (let j=0;j<resultat_mot.Mot_cible.length;j++) {
+                        tapis_perso[i][j] = resultat_mot.Mot_cible[j]
+                    }
+                    for (let k=0;k<liste_diff.length;k++) {
+                        index = main_adverse.indexOf(list_diff[k])
+                        main_adverse.splice(index,1)
+                    }
+                    console.log("Bien joué ! Vous volez le mot de votre adversaire.");
+                    tapis_adverse[resultat_mot.Ligne_source] = ["","","","","","","","",""]
+                    break
                 }
             }
             action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
@@ -54,17 +60,22 @@ function double(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     console.log("Quel mot voulez vous remplacer et par quoi ?");
     prompt.get(["Ligne_source","Mot_cible"], function(_,resultat_mot) {
         list_source = tapis_adverse[resultat_mot.Ligne_source]
-        if (estListePresenteRecursif(trouverLettresDifferentes(list_source,resultat_mot.Mot_cible),main_adverse)) {
-            console.log("Bien joué ! Vous volez le mot de votre adversaire.");
-            c++
-            index = tapis_adverse.indexOf(resultat_mot.Mot_source);
-            tapis_adverse[index] = resultat_mot.Mot_cible 
+        list_diff = trouverLettresDifferentes(list_source,resultat_mot.Mot_cible)
+        if (estListePresenteRecursif(list_diff,main_adverse) && list_diff.length > 0) {
             for (let i=0;i<tapis_perso.length;i++) {
-                if (tapis_perso[i] == ["","","","","","","","",""]) {
-                    tapis_perso[i] = main_adverse.splice(index,1);
+                if (tapis_perso[i].every((element,index) => element === "")) {
+                    for (let j=0;j<resultat_mot.Mot_cible.length;j++) {
+                        tapis_perso[i][j] = resultat_mot.Mot_cible[j]
+                    }
+                    for (let k=0;k<liste_diff.length;k++) {
+                        index = main_adverse.indexOf(list_diff[k])
+                        main_adverse.splice(index,1)
+                    }
+                    console.log("Bien joué ! Vous volez le mot de votre adversaire.");
+                    tapis_adverse[resultat_mot.Ligne_source] = ["","","","","","","","",""]
+                    break
                 }
             }
-
             simple(main_perso,main_adverse,tapis_adverse,tapis_perso,sac)
         }
         else {
