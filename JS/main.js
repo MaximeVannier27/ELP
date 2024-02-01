@@ -2,7 +2,15 @@ const prompt = require("prompt");
 const fs = require("fs");
 prompt.start();
 
+/*function action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
+    console.log("Voulez vous jouer ou passer ? : (jouer/passer)")
+    prompt.get(["Choix"], function(_,resultat_choix) {
+        if (resultat_choix.Choix === "jouer") {
+            jouer(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
+        }
+    })
 
+}*/
 
 function trouverLettresDifferentes(list_verif, mot_verif) {
     list_temp = list_verif
@@ -19,17 +27,24 @@ function trouverLettresDifferentes(list_verif, mot_verif) {
     return lettresDifferentes
   }
 
-function simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac){
-    console.log("Quel mot voulez vous remplacer et par quoi ?");
+function simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
+    console.log("Quelle ligne voulez vous remplacer et par quoi ?");
     prompt.get(["Ligne_source","Mot_cible"], function(_,resultat_mot) {
         list_source = tapis_adverse[resultat_mot.Ligne_source]
-        if (estListePresenteRecursif(trouverLettresDifferentes(list_source,resultat_mot.Mot_cible),main_adverse)) {
-            console.log("Bien joué ! Vous volez le mot de votre adversaire.");
-            index = tapis_adverse.indexOf(resultat_mot.Mot_source);
-            tapis_adverse[index] = resultat_mot.Mot_cible 
+        list_diff = trouverLettresDifferentes(list_source,resultat_mot.Mot_cible)
+        if (estListePresenteRecursif(list_diff,main_adverse) && list_diff.length > 0) {
             for (let i=0;i<tapis_perso.length;i++) {
-                if (tapis_perso[i] == []) {
-                    tapis_perso[i] = main_adverse.splice(index,1);
+                if (tapis_perso[i].every((element,index) => element === "")) {
+                    for (let j=0;j<resultat_mot.Mot_cible.length;j++) {
+                        tapis_perso[i][j] = resultat_mot.Mot_cible[j]
+                    }
+                    for (let k=0;k<liste_diff.length;k++) {
+                        index = main_adverse.indexOf(list_diff[k])
+                        main_adverse.splice(index,1)
+                    }
+                    console.log("Bien joué ! Vous volez le mot de votre adversaire.");
+                    tapis_adverse[resultat_mot.Ligne_source] = ["","","","","","","","",""]
+                    break
                 }
             }
             action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
@@ -41,21 +56,27 @@ function simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac){
         });
 }
 
-function double(main_perso,main_adverse,tapis_perso,tapis_adverse,sac){
+function double(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     console.log("Quel mot voulez vous remplacer et par quoi ?");
     prompt.get(["Ligne_source","Mot_cible"], function(_,resultat_mot) {
         list_source = tapis_adverse[resultat_mot.Ligne_source]
-        if (estListePresenteRecursif(trouverLettresDifferentes(list_source,resultat_mot.Mot_cible),main_adverse)) {
-            console.log("Bien joué ! Vous volez le mot de votre adversaire.");
-            c++
-            index = tapis_adverse.indexOf(resultat_mot.Mot_source);
-            tapis_adverse[index] = resultat_mot.Mot_cible 
+        list_diff = trouverLettresDifferentes(list_source,resultat_mot.Mot_cible)
+        if (estListePresenteRecursif(list_diff,main_adverse) && list_diff.length > 0) {
             for (let i=0;i<tapis_perso.length;i++) {
-                if (tapis_perso[i] == []) {
-                    tapis_perso[i] = main_adverse.splice(index,1);
+                if (tapis_perso[i].every((element,index) => element === "")) {
+                    for (let j=0;j<resultat_mot.Mot_cible.length;j++) {
+                        tapis_perso[i][j] = resultat_mot.Mot_cible[j]
+                    }
+                    for (let k=0;k<liste_diff.length;k++) {
+                        index = main_adverse.indexOf(list_diff[k])
+                        main_adverse.splice(index,1)
+                    }
+                    console.log("Bien joué ! Vous volez le mot de votre adversaire.");
+                    tapis_adverse[resultat_mot.Ligne_source] = ["","","","","","","","",""]
+                    break
                 }
             }
-            simple(main_adverse,tapis_adverse,tapis_perso)
+            simple(main_perso,main_adverse,tapis_adverse,tapis_perso,sac)
         }
         else {
             console.log("Erreur: le mot cible n'est pas faisable à partir de la main adverse")
@@ -81,9 +102,10 @@ function estListePresenteRecursif(listePetite, listeGrande, indexPetite = 0, ind
   }
 
 function jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
-    console.log("Main adverse:\n" + main_adverse)
-    console.log("Tapis adverse:\n" + tapis_adverse)
-    console.log("Double Jarnac, Jarnac ou rien ? (d/j/r)\n")
+    console.log("Main adverse:\n" + main_adverse);
+    console.log("Tapis adverse:");
+    afficherMatrice(tapis_adverse)
+    console.log("Double Jarnac, Jarnac ou rien ? (d/j/r)");
     prompt.get(["Jarnac"], function(_,resultat_jarnac) {
         if (resultat_jarnac.Jarnac === "d") {
            double(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
@@ -92,22 +114,24 @@ function jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
             simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         }
         else {
-            console.log("Pas de Jarnac")
+            console.log("Pas de Jarnac");
             action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         }
     })
 }
 
-
 function action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     console.log("Votre tour !");
-
+    console.log("Votre main:\n" + main_perso);
+    console.log("Votre tapis:");
+    afficherMatrice(tapis_perso)
+    console.log("Voulez vous piocher ou échanger 3 cartes: (pioche/change");
     prompt.get(['Choix'], function (err,result_choix) {
         if (result_choix.Choix === "pioche") {
             console.log('Vous avez choisi de piocher une lettre');
-            main_perso += pioche(1,sac)
-
-        } else if (result_choix.Choix === "change") {
+            main_perso.concat(pioche(1,sac));
+        } 
+        else if (result_choix.Choix === "change") {
             console.log("Vous avez choisi d'échanger 3 de vos lettres");
             console.log("Voici votre main:");
             console.log(main_perso);
@@ -263,3 +287,6 @@ plato_joueur2[0] = ["C","A","R","I","E","S",0,0]
 
 
 jarnac(main_joueur1,main_joueur2,plato_joueur1,plato_joueur2,valise)
+
+
+//console.log(fin(plato_joueur1))
