@@ -23,7 +23,11 @@ function nouveau(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
                     break
                 }
             }
+        } else {
+            console.log("Ce mot n'est pas jouable.")
+            action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         }
+
     })
 
 
@@ -34,23 +38,21 @@ function modifier(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     console.log("Quel mot voulez vous modifier (numero de ligne)")
     console.log("Quel est le mot cible ?")
     prompt.get(["Ligne","Cible"], function (_,resultat_modif) {
-
-        list_diff = trouverLettresDifferentes(list_source,resultat_mot.Mot_cible)
-        if (estListePresenteRecursif(list_diff,main_adverse) && list_diff.length > 0) {
-            for (let i=0;i<tapis_perso.length;i++) {
-                if (tapis_perso[i].every((element,index) => element === "")) {
-                    for (let j=0;j<resultat_mot.Mot_cible.length;j++) {
-                        tapis_perso[i][j] = resultat_mot.Mot_cible[j]
-                    }
-                    for (let k=0;k<liste_diff.length;k++) {
-                        index = main_adverse.indexOf(list_diff[k])
-                        main_adverse.splice(index,1)
-                    }
-                    console.log("Bien joué ! Vous volez le mot de votre adversaire.");
-                    tapis_adverse[resultat_mot.Ligne_source] = ["","","","","","","","",""]
-                    break
-                }
+        list_source = tapis_perso[resultat_modif.Ligne]
+        list_diff = trouverLettresDifferentes(list_source,resultat_modif.Cible)
+        if (estListePresenteRecursif(list_diff,main_perso) && list_diff.length > 0 ) {
+            for (let j=0;j<resultat_mot.Mot_cible.length;j++) {
+                tapis_perso[resultat_modif.Ligne][j] = resultat_modif.Cible[j]
             }
+            for (let k=0;k<list_diff.length;k++) {
+                index = main_perso.indexOf(list_diff[k])
+                main_perso.splice(index,1)
+            }
+            console.log("Bien joué ! Vous avez modifié votre mot.");
+        } else {
+            console.log("Ce mot n'est pas modifiable")
+            action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
+        }
     })
 }
 
@@ -243,8 +245,8 @@ function afficherMatrice(matrice) {
     }
 }
 
-plato_joueur1 = [["A","B","C","D","","","","",""],
-                ["","","","","","","","",""],
+plato_joueur1 = [["A","B","C","","","","","",""],
+                ["M","L","O","","","","","",""],
                 ["","","","","","","","",""],
                 ["","","","","","","","",""],
                 ["","","","","","","","",""],
@@ -297,21 +299,62 @@ main_joueur2 = main_joueur2.concat(["S"])
 console.log(main_joueur1);
 console.log(main_joueur2);
 
-function fin(plato) {
-    points = 0
-    for (let i = 0; i < 8; i++) {
-        for (let j = 2; j < 9; j++) {
-            if (plato[i][j] !== "")
-                {
-                    points += Math.pow(j+1, 2) 
-                }
-            }    
+
+function comptage(plato) {
+    let points = 0;
+    for (let i = 0; i < plato.length; i++) {
+        if (plato[i].every(element => element === "")) {
+            break;
+        }
+
+        if (plato[i][0] === "") {
+            continue;
+        }
+        let j = 0;
+        let longueur_mot = 0;
+        while (j < plato[i].length && plato[i][j] !== "") {
+            longueur_mot++;
+            j++;
+        }
+        if (longueur_mot > 2) {
+            points += Math.pow(longueur_mot, 2);
+        }
     }
-    return points
+    return points;
 }
 
-console.log(fin(plato_joueur1))
-plato_joueur2[0] = ["C","A","R","I","E","S","",""]
+function plato_verif(plato) {
+    let rempli = true;
+    let i = 0;
+
+    while (rempli && i < 8) {
+        if (plato[i][0] !== "") {
+            i++;
+        } else {
+            rempli = false;
+        }
+    }
+
+    return rempli;
+}
+
+function gagnant(plato1, plato2) {
+    score_joueur1 = comptage(plato_joueur1)
+    score_joueur2 = comptage(plato_joueur2)
+    if (score_joueur1 > score_joueur2) {
+        console.log("Le joueur 1 a gagné !")
+    }
+    else if (score_joueur1 === score_joueur2) {
+        console.log("Il y a égalité")
+    }
+    else {
+        console.log("Le joueur 2 a gagné !")
+    }
+
+}
+
+console.log(comptage(plato_joueur1))
+plato_joueur2[0] = ["C","A","R","I","E","S",0,0]
 
 
 jarnac(main_joueur1,main_joueur2,plato_joueur1,plato_joueur2,valise)
