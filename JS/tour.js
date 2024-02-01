@@ -2,7 +2,12 @@ const prompt = require("prompt");
 const fs = require("fs");
 prompt.start();
 
+tapis_perso = [["A","B","","","","","K","",""], ["","","","","","","","",""]]
 
+console.log(tapis_perso[1].every((element,index) => element === ""))
+
+
+/*
 
 function trouverLettresDifferentes(mot1, mot2) {
     let lettresDifferentes = [];
@@ -129,3 +134,4 @@ function tour(main,main_adverse,tapis_perso,tapis_adverse,sac) {
     console.log("suite du tour")
 
 }
+*/

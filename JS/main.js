@@ -2,35 +2,39 @@ const prompt = require("prompt");
 const fs = require("fs");
 prompt.start();
 
-/*function action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
-    console.log("Voulez vous jouer ou passer ? : (jouer/passer)")
-    prompt.get(["Choix"], function(_,resultat_choix) {
-        if (resultat_choix.Choix === "jouer") {
-            jouer(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
+
+
+function nouveau(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
+    console.log("Quel mot veux-tu poser ?")
+    prompt.get(["Mot"], function (_,resultat_nouveau) {
+        liste_diff = trouverLettresDifferentes(main_perso,resultat_nouveau.Mot)
+        if (liste_diff.lenght === 0) {
+            for (let i=0;i<tapis_perso.length;i++) {
+                if (tapis_perso[i].every((element,index) => element === "")) {
+                    for (let j=0;j<resultat_nouveau.Mot.length;j++) {
+                        tapis_perso[i][j] = resultat_nouveau.Mot[j]
+                    }
+                    for (let k=0;k<liste_diff.length;k++) {
+                        index = main_perso.indexOf(list_diff[k])
+                        main_perso.splice(index,1)
+                    }
+                    console.log("Bien joué ! Vous avez posé un nouveau mot");
+                    main_perso.concat(pioche(1,sac))
+                    break
+                }
+            }
         }
     })
 
-}*/
 
-function trouverLettresDifferentes(list_verif, mot_verif) {
-    list_temp = list_verif
-    let lettresDifferentes = [];
-    for (let lettre in mot_verif) {
-        if (list_temp.includes(mot_verif[lettre])) {
-            indice = list_temp.indexOf(mot_verif[lettre])
-            list_temp.splice(indice,1)
-        }
-        else {
-            lettresDifferentes.push(mot_verif[lettre])
-        }
-    }
-    return lettresDifferentes
-  }
 
-function simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
-    console.log("Quelle ligne voulez vous remplacer et par quoi ?");
-    prompt.get(["Ligne_source","Mot_cible"], function(_,resultat_mot) {
-        list_source = tapis_adverse[resultat_mot.Ligne_source]
+}
+
+function modifier(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
+    console.log("Quel mot voulez vous modifier (numero de ligne)")
+    console.log("Quel est le mot cible ?")
+    prompt.get(["Ligne","Cible"], function (_,resultat_modif) {
+
         list_diff = trouverLettresDifferentes(list_source,resultat_mot.Mot_cible)
         if (estListePresenteRecursif(list_diff,main_adverse) && list_diff.length > 0) {
             for (let i=0;i<tapis_perso.length;i++) {
@@ -47,11 +51,66 @@ function simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
                     break
                 }
             }
+    })
+}
+
+
+function action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
+    console.log("Voulez vous jouer ou passer ? : (nouveau/modifier/passer)")
+    prompt.get(["Choix"], function (_,resultat_choix) {
+        if (resultat_choix.Choix === "nouveau") {
+            nouveau(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
+        } else if (resultat_choix.Choix === "modifier") {
+            modifier(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
+        } else if (resultat_choix.Choix === "passer") {
+            console.log("Tour suivant")
+            jarnac(main_adverse,main_perso,tapis_adverse,tapis_perso,sac)
+        }
+    })
+
+}
+
+function trouverLettresDifferentes(list_verif, mot_verif) {
+    list_temp = list_verif
+    let lettresDifferentes = [];
+    for (let lettre in mot_verif) {
+        if (list_temp.includes(mot_verif[lettre])) {
+            indice = list_temp.indexOf(mot_verif[lettre])
+            list_temp.splice(indice,1)
+        }
+        else {
+            lettresDifferentes.push(mot_verif[lettre])
+        }
+    }
+    return lettresDifferentes
+}
+
+function simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
+    console.log("Quelle ligne voulez vous remplacer et par quoi ?");
+    prompt.get(["Ligne_source","Mot_cible"], function(_,resultat_mot) {
+        list_source = tapis_adverse[resultat_mot.Ligne_source]
+        list_diff = trouverLettresDifferentes(list_source,resultat_mot.Mot_cible)
+        if (estListePresenteRecursif(list_diff,main_adverse) && list_diff.length > 0 && resultat_mot.Mot_cible.length > 2) {
+            for (let i=0;i<tapis_perso.length;i++) {
+                if (tapis_perso[i].every((element,index) => element === "")) {
+                    for (let j=0;j<resultat_mot.Mot_cible.length;j++) {
+                        tapis_perso[i][j] = resultat_mot.Mot_cible[j]
+                    }
+                    for (let k=0;k<list_diff.length;k++) {
+                        index = main_adverse.indexOf(list_diff[k])
+                        main_adverse.splice(index,1)
+                    }
+                    console.log("Bien joué ! Vous volez le mot de votre adversaire.");
+                    console.log(tapis_perso)
+                    tapis_adverse[resultat_mot.Ligne_source] = ["","","","","","","","",""]
+                    break
+                }
+            }
             action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         }
         else {
             console.log("Erreur: le mot cible n'est pas faisable à partir de la main adverse")
-            jarnac(main_adverse,tapis_adverse,tapis_perso)
+            jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         }
         });
 }
@@ -67,20 +126,21 @@ function double(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
                     for (let j=0;j<resultat_mot.Mot_cible.length;j++) {
                         tapis_perso[i][j] = resultat_mot.Mot_cible[j]
                     }
-                    for (let k=0;k<liste_diff.length;k++) {
+                    for (let k=0;k<list_diff.length;k++) {
                         index = main_adverse.indexOf(list_diff[k])
                         main_adverse.splice(index,1)
                     }
                     console.log("Bien joué ! Vous volez le mot de votre adversaire.");
+                    console.log(tapis_perso)
                     tapis_adverse[resultat_mot.Ligne_source] = ["","","","","","","","",""]
                     break
                 }
             }
-            simple(main_perso,main_adverse,tapis_adverse,tapis_perso,sac)
+            simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         }
         else {
             console.log("Erreur: le mot cible n'est pas faisable à partir de la main adverse")
-            jarnac(main_adverse,tapis_adverse,tapis_perso)
+            jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         }
         });
 }
@@ -99,7 +159,7 @@ function estListePresenteRecursif(listePetite, listeGrande, indexPetite = 0, ind
     }
     // Si aucun élément correspondant n'est trouvé, la liste n'est pas présente
     return false;
-  }
+}
 
 function jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     console.log("Main adverse:\n" + main_adverse);
@@ -109,10 +169,10 @@ function jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     prompt.get(["Jarnac"], function(_,resultat_jarnac) {
         if (resultat_jarnac.Jarnac === "d") {
            double(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
-        }
+        } 
         else if(resultat_jarnac.Jarnac === "j") {
             simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
-        }
+        } 
         else {
             console.log("Pas de Jarnac");
             action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
@@ -121,6 +181,7 @@ function jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
 }
 
 function action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
+    console.log(tapis_perso)
     console.log("Votre tour !");
     console.log("Votre main:\n" + main_perso);
     console.log("Votre tapis:");
@@ -129,21 +190,21 @@ function action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     prompt.get(['Choix'], function (err,result_choix) {
         if (result_choix.Choix === "pioche") {
             console.log('Vous avez choisi de piocher une lettre');
-            main_perso.concat(pioche(1,sac));
+            main_perso = main_perso.concat(pioche(1,sac));
         } 
         else if (result_choix.Choix === "change") {
             console.log("Vous avez choisi d'échanger 3 de vos lettres");
             console.log("Voici votre main:");
             console.log(main_perso);
             prompt.get(["Lettre_1","Lettre_2","Lettre_3"], function (_,result_lettre) {
-                sac += [,] + main_perso.splice(result_lettre.Lettre_1,1);
-                sac += [,] + main_perso.splice(result_lettre.Lettre_2,1);
-                sac += [,] + main_perso.splice(result_lettre.Lettre_3,1);
-                main_perso += pioche(3,sac);
+                sac = sac.concat(main_perso.splice(result_lettre.Lettre_1,1));
+                sac = sac.concat(main_perso.splice(result_lettre.Lettre_2,1));
+                sac = sac.concat(main_perso.splice(result_lettre.Lettre_3,1));
+                main_perso = main_perso.concat(pioche(3,sac));
                 console.log("Votre nouvelle main:\n" + main_perso);
             });  
         } 
-        else{
+        else {
             console.log(err);
         }
     });
@@ -215,7 +276,8 @@ function sac(lettres) {
 function pioche(nombre, sac) {
     if (nombre === 0) {
         return [];
-    } else {
+    } 
+    else {
         let cartePiochee = sac[Math.floor(Math.random() * sac.length)];
         return [cartePiochee].concat(pioche(nombre - 1, sac));
     }
@@ -227,7 +289,8 @@ let valise = sac(lettres_jeu);
 
 main_joueur1 = main_joueur1.concat(pioche(6, valise));
 main_joueur2 = main_joueur2.concat(pioche(6, valise));
-main_joueur2 += [,"S"]
+main_joueur2.splice(5,1)
+main_joueur2 = main_joueur2.concat(["S"])
 
 console.log(main_joueur1);
 console.log(main_joueur2);
