@@ -30,7 +30,29 @@ function nouveau(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
 
 }
 
+function modifier(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
+    console.log("Quel mot voulez vous modifier (numero de ligne)")
+    console.log("Quel est le mot cible ?")
+    prompt.get(["Ligne","Cible"], function (_,resultat_modif) {
 
+        list_diff = trouverLettresDifferentes(list_source,resultat_mot.Mot_cible)
+        if (estListePresenteRecursif(list_diff,main_adverse) && list_diff.length > 0) {
+            for (let i=0;i<tapis_perso.length;i++) {
+                if (tapis_perso[i].every((element,index) => element === "")) {
+                    for (let j=0;j<resultat_mot.Mot_cible.length;j++) {
+                        tapis_perso[i][j] = resultat_mot.Mot_cible[j]
+                    }
+                    for (let k=0;k<liste_diff.length;k++) {
+                        index = main_adverse.indexOf(list_diff[k])
+                        main_adverse.splice(index,1)
+                    }
+                    console.log("Bien joué ! Vous volez le mot de votre adversaire.");
+                    tapis_adverse[resultat_mot.Ligne_source] = ["","","","","","","","",""]
+                    break
+                }
+            }
+    })
+}
 
 
 function action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
@@ -87,7 +109,7 @@ function simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
         }
         else {
             console.log("Erreur: le mot cible n'est pas faisable à partir de la main adverse")
-            jarnac(main_adverse,tapis_adverse,tapis_perso)
+            jarnac(main_perso,main_adverse,tapis_adverse,tapis_perso)
         }
         });
 }
@@ -116,7 +138,7 @@ function double(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
         }
         else {
             console.log("Erreur: le mot cible n'est pas faisable à partir de la main adverse")
-            jarnac(main_adverse,tapis_adverse,tapis_perso)
+            jarnac(main_perso,main_adverse,tapis_adverse,tapis_perso)
         }
         });
 }
@@ -145,10 +167,10 @@ function jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     prompt.get(["Jarnac"], function(_,resultat_jarnac) {
         if (resultat_jarnac.Jarnac === "d") {
            double(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
-        }
+        } 
         else if(resultat_jarnac.Jarnac === "j") {
             simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
-        }
+        } 
         else {
             console.log("Pas de Jarnac");
             action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
@@ -172,14 +194,14 @@ function action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
             console.log("Voici votre main:");
             console.log(main_perso);
             prompt.get(["Lettre_1","Lettre_2","Lettre_3"], function (_,result_lettre) {
-                sac += [,] + main_perso.splice(result_lettre.Lettre_1,1);
-                sac += [,] + main_perso.splice(result_lettre.Lettre_2,1);
-                sac += [,] + main_perso.splice(result_lettre.Lettre_3,1);
-                main_perso += pioche(3,sac);
+                sac.concat(main_perso.splice(result_lettre.Lettre_1,1));
+                sac.concat(main_perso.splice(result_lettre.Lettre_2,1));
+                sac.concat(main_perso.splice(result_lettre.Lettre_3,1));
+                main_perso.concat(pioche(3,sac));
                 console.log("Votre nouvelle main:\n" + main_perso);
             });  
         } 
-        else{
+        else {
             console.log(err);
         }
     });
@@ -251,7 +273,8 @@ function sac(lettres) {
 function pioche(nombre, sac) {
     if (nombre === 0) {
         return [];
-    } else {
+    } 
+    else {
         let cartePiochee = sac[Math.floor(Math.random() * sac.length)];
         return [cartePiochee].concat(pioche(nombre - 1, sac));
     }
@@ -268,58 +291,21 @@ main_joueur2 += [,"S"]
 console.log(main_joueur1);
 console.log(main_joueur2);
 
-
-function comptage(plato) {
-    let points = 0;
-
-    for (let i = 0; i < plato.length; i++) {
-        let longueur_mot = 0;
-        
-        for (let j = 0; j < plato[i].length; j++) {
-            if (plato[i][j] !== "") {
-                longueur_mot++;
-            } else {
-                break;
-            }
-        }
-        points += Math.pow(longueur_mot, 2);
+function fin(plato) {
+    points = 0
+    for (let i = 0; i < 8; i++) {
+        for (let j = 2; j < 9; j++) {
+            if (plato[i][j] !== "")
+                {
+                    points += Math.pow(j+1, 2) 
+                }
+            }    
     }
-
-    return points;
+    return points
 }
 
-function plato_verif(plato) {
-    let rempli = true;
-    let i = 0;
-
-    while (rempli && i < 8) {
-        if (plato[i][0] !== "") {
-            i++;
-        } else {
-            rempli = false;
-        }
-    }
-
-    return rempli;
-}
-
-function gagnant(plato1, plato2) {
-    score_joueur1 = comptage(plato_joueur1)
-    score_joueur2 = comptage(plato_joueur2)
-    if (score_joueur1 > score_joueur2) {
-        console.log("Le joueur 1 a gagné !")
-    }
-    else if (score_joueur1 === score_joueur2) {
-        console.log("Il y a égalité")
-    }
-    else {
-        console.log("Le joueur 2 a gagné !")
-    }
-
-}
-
-console.log(comptage(plato_joueur1))
-plato_joueur2[0] = ["C","A","R","I","E","S",0,0]
+console.log(fin(plato_joueur1))
+plato_joueur2[0] = ["C","A","R","I","E","S","",""]
 
 
 jarnac(main_joueur1,main_joueur2,plato_joueur1,plato_joueur2,valise)
