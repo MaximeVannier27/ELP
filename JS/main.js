@@ -8,6 +8,7 @@ function action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
         if (resultat_choix.Choix === "jouer") {
             jouer(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         }
+        else if (re)
     })
 
 }
@@ -36,7 +37,7 @@ function simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
             index = tapis_adverse.indexOf(resultat_mot.Mot_source);
             tapis_adverse[index] = resultat_mot.Mot_cible 
             for (let i=0;i<tapis_perso.length;i++) {
-                if (tapis_perso[i] == []) {
+                if (tapis_perso[i] == ["","","","","","","","",""]) {
                     tapis_perso[i] = main_adverse.splice(index,1);
                 }
             }
@@ -59,7 +60,7 @@ function double(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
             index = tapis_adverse.indexOf(resultat_mot.Mot_source);
             tapis_adverse[index] = resultat_mot.Mot_cible 
             for (let i=0;i<tapis_perso.length;i++) {
-                if (tapis_perso[i] == []) {
+                if (tapis_perso[i] == ["","","","","","","","",""]) {
                     tapis_perso[i] = main_adverse.splice(index,1);
                 }
             }
@@ -93,7 +94,7 @@ function jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     console.log("Main adverse:\n" + main_adverse);
     console.log("Tapis adverse:");
     afficherMatrice(tapis_adverse)
-    console.log("Double Jarnac, Jarnac ou rien ? (d/j/r)\n");
+    console.log("Double Jarnac, Jarnac ou rien ? (d/j/r)");
     prompt.get(["Jarnac"], function(_,resultat_jarnac) {
         if (resultat_jarnac.Jarnac === "d") {
            double(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
