@@ -124,7 +124,7 @@ function nouveau(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
                 }
             }
             if (plato_verif(tapis_perso)) {
-                console.log("Vous avez fini !\nVous avez ${comptage(tapis_perso)} points et votre adversaire ${comptage(tapis_adverse)} points")
+                console.log(`Vous avez fini !\nVous avez ${comptage(tapis_perso)} points et votre adversaire ${comptage(tapis_adverse)} points`)
                 gagnant(tapis_perso,tapis_adverse)
             }
             else {
