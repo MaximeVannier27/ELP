@@ -2,7 +2,6 @@ const prompt = require("prompt");
 const fs = require("fs");
 prompt.start();
 
-
 const lettres_jeu = [["A", 14], ["B", 4], ["C", 7], ["D", 5], ["E", 19],
 ["F", 2], ["G", 4], ["H", 2], ["I", 11], ["J", 1], ["K", 1],
 ["L", 6], ["M", 5], ["N", 9], ["O", 8], ["P", 4], ["Q", 1],
@@ -11,8 +10,7 @@ const lettres_jeu = [["A", 14], ["B", 4], ["C", 7], ["D", 5], ["E", 19],
 
 let joueur = 1
 
-const fichier = Historique.log
-
+const fichier = "Historique.log"
 
 function comptage(plato) {
     let points = 0;
@@ -47,20 +45,61 @@ function plato_verif(plato) {
 }
 
 function gagnant(plato1, plato2) {
-    fs.appendFileSync(fichier,"La partie est terminée")
+    fs.appendFileSync(fichier,"La partie est terminée\n")
     score_joueur1 = comptage(plato_joueur1)
     score_joueur2 = comptage(plato_joueur2)
     if (score_joueur1 > score_joueur2) {
         console.log("Vous avez gagné !")
-        fs.appendFileSync(fichier,"Le joueur ${joueur} à gagné")
+        fs.appendFileSync(fichier,`Le joueur ${joueur} a gagné\n`)
     }
     else if (score_joueur1 === score_joueur2) {
         console.log("Il y a égalité")
-        fs.appendFileSync(fichier,"Personne n'a gagné")
+        fs.appendFileSync(fichier,"Personne n'a gagné\n")
     }
     else {
         console.log("L'autre joueur a gagné !")
-        fs.appendFileSync(fichier,"Le joueur ${joueur+1} à gagné")
+        fs.appendFileSync(fichier,`Le joueur ${joueur+1} a gagné\n`)
+    }
+}
+
+function initialiserMatrice(nbLignes, nbColonnes) {
+    let matrice = [];
+    for (let i = 0; i < nbLignes; i++) {
+        matrice[i] = [];
+        for (let j = 0; j < nbColonnes; j++) {
+            matrice[i][j] = "";
+        }
+    }
+    return matrice;
+}
+
+function afficherMatrice(matrice) {
+    for (let i = 0; i < matrice.length; i++) {
+        let ligne = "";
+        for (let j = 0; j < matrice[i].length; j++) {
+            ligne += matrice[i][j] + "\t";
+        }
+        console.log(ligne);
+    }
+}
+
+function sac(lettres) {
+    let liste = [];
+    for (let [lettre, nombre] of lettres) {
+        for (let i = 0; i < nombre; i++) {
+            liste.push(lettre);
+        }
+    }
+    return liste;
+}
+
+function pioche(nombre, sac) {
+    if (nombre === 0) {
+        return [];
+    } 
+    else {
+        let cartePiochee = sac[Math.floor(Math.random() * sac.length)];
+        return [cartePiochee].concat(pioche(nombre - 1, sac));
     }
 }
 
@@ -79,7 +118,7 @@ function nouveau(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
                         main_perso.splice(index,1)
                     }
                     console.log("Bien joué ! Vous avez posé un nouveau mot");
-                    fs.appendFileSync(fichier,"Le joueur ${joueur} a posé le mot ${resultat_nouveau.Mot}")
+                    fs.appendFileSync(fichier,`Le joueur ${joueur} a posé le mot ${resultat_nouveau.Mot}\n`)
                     main_perso = main_perso.concat(pioche(1,sac))
                     break
                 }
@@ -113,7 +152,7 @@ function modifier(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
                 main_perso.splice(index,1)
             }
             console.log("Bien joué ! Vous avez modifié votre mot.");
-            fs.appendFileSync(fichier,"Le joueur ${joueur} a modifié sa ligne n°${resultat_modif.Ligne} avec ${resultat_modif.Cible}")
+            fs.appendFileSync(fichier,`Le joueur ${joueur} a modifié sa ligne n°${resultat_modif.Ligne} avec ${resultat_modif.Cible}\n`)
             main_perso = main_perso = main_perso.concat(pioche(1,sac))
             action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         } else {
@@ -135,7 +174,7 @@ function action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
             modifier(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         } else if (resultat_choix.Choix === "passer") {
             console.log("Tour suivant, On change de joueur !")
-            fs.appendFileSync(fichier,"Le joueur ${joueur} passe son tour")
+            fs.appendFileSync(fichier,`Le joueur ${joueur} passe son tour\n`)
             joueur = (joueur%2)+1
             jarnac(main_adverse,main_perso,tapis_adverse,tapis_perso,sac)
         }
@@ -173,7 +212,7 @@ function simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
                         main_adverse.splice(index,1)
                     }
                     console.log("Bien joué ! Vous volez le mot de votre adversaire.");
-                    fs.appendFileSync(fichier,"Le joueur ${joueur} a Jarnac le mot ${resultat_mot.Mot_cible}")
+                    fs.appendFileSync(fichier,`Le joueur ${joueur} a Jarnac le mot ${resultat_mot.Mot_cible}\n`)
                     tapis_adverse[resultat_mot.Ligne_source] = ["","","","","","","","",""]
                     break
                 }
@@ -209,7 +248,7 @@ function double(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
                         main_adverse.splice(index,1)
                     }
                     console.log("Bien joué ! Vous volez le mot de votre adversaire.");
-                    fs.appendFileSync(fichier,"Le joueur ${joueur} a Double Jarnac le mot ${resultat_mot.Mot_cible}")
+                    fs.appendFileSync(fichier,`Le joueur ${joueur} a Double Jarnac le mot ${resultat_mot.Mot_cible}\n`)
                     tapis_adverse[resultat_mot.Ligne_source] = ["","","","","","","","",""]
                     break
                 }
@@ -259,7 +298,7 @@ function jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
         } 
         else {
             console.log("Pas de Jarnac");
-            fs.appendFileSync(fichier,"Le joueur ${joueur} ne Jarnac pas")
+            fs.appendFileSync(fichier,`Le joueur ${joueur} ne Jarnac pas\n`)
             action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         }
     })
@@ -275,7 +314,7 @@ function action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
             console.log('Vous avez choisi de piocher une lettre');
             main_perso = main_perso.concat(pioche(1,sac));
             console.log("Votre nouvelle main:\n" + main_perso);
-            fs.appendFileSync(fichier,"Le joueur ${joueur} a pioché")
+            fs.appendFileSync(fichier,`Le joueur ${joueur} a pioché\n`)
             action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         } 
         else if (result_choix.Choix === "change") {
@@ -304,7 +343,7 @@ function action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
                 else {
                     main_perso.splice(result_lettre.Lettre_3,0,pioche(1,sac)[0]);
                 }
-                fs.appendFileSync(fichier,"Le joueur ${joueur} a échangé 3 lettres de sa main")
+                fs.appendFileSync(fichier,`Le joueur ${joueur} a échangé 3 lettres de sa main\n`)
                 action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
             });  
         } 
@@ -312,48 +351,6 @@ function action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
             console.log(err);
         }
     });
-}
-
-function initialiserMatrice(nbLignes, nbColonnes) {
-    let matrice = [];
-    for (let i = 0; i < nbLignes; i++) {
-        matrice[i] = [];
-        for (let j = 0; j < nbColonnes; j++) {
-            matrice[i][j] = "";
-        }
-    }
-    return matrice;
-}
-
-function afficherMatrice(matrice) {
-    for (let i = 0; i < matrice.length; i++) {
-        let ligne = "";
-        for (let j = 0; j < matrice[i].length; j++) {
-            ligne += matrice[i][j] + "\t";
-        }
-        console.log(ligne);
-    }
-}
-
-
-function sac(lettres) {
-    let liste = [];
-    for (let [lettre, nombre] of lettres) {
-        for (let i = 0; i < nombre; i++) {
-            liste.push(lettre);
-        }
-    }
-    return liste;
-}
-
-function pioche(nombre, sac) {
-    if (nombre === 0) {
-        return [];
-    } 
-    else {
-        let cartePiochee = sac[Math.floor(Math.random() * sac.length)];
-        return [cartePiochee].concat(pioche(nombre - 1, sac));
-    }
 }
 
 let plato_joueur1 = initialiserMatrice(8, 9);
@@ -370,13 +367,13 @@ premier_joueur = Math.floor(Math.random() * 2)
 
 if (premier_joueur == 0) {
     console.log("Le premier joueur commence !")
-    fs.writeFileSync(fichier,"Le premier joueur commence")
+    fs.writeFileSync(fichier,"Le premier joueur commence\n")
     joueur = 1
     action_tour(main_joueur1,main_joueur2,plato_joueur1,plato_joueur2,valise)
 }
 else {
     console.log("Le deuxième joueur commence !")
-    fs.writeFileSync(fichier,"Le deuxième joueur commence")
+    fs.writeFileSync(fichier,"Le deuxième joueur commence\n")
     joueur = 2
     action_tour(main_joueur2,main_joueur1,plato_joueur2,plato_joueur1,valise)
 }
