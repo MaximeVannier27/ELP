@@ -1,3 +1,7 @@
+const {estListePresenteRecursif, trouverLettresDifferentes, gagnant, plato_verif} = require('./fonctions_controle');
+const {initialiserMatrice, sac, afficherMatrice} = require('./fonctions_init');
+const {pioche} = require('./fonctions_actions')
+
 const prompt = require("prompt");
 const fs = require("fs");
 prompt.start();
@@ -29,78 +33,6 @@ function comptage(plato) {
         }
     }
     return points;
-}
-
-function plato_verif(plato) {
-    let rempli = true;
-    let i = 0;
-    while (rempli && i < 8) {
-        if (plato[i][0] !== "") {
-            i++;
-        } else {
-            rempli = false;
-        }
-    }
-    return rempli;
-}
-
-function gagnant(plato1, plato2) {
-    fs.appendFileSync(fichier,"La partie est terminée\n")
-    score_joueur1 = comptage(plato_joueur1)
-    score_joueur2 = comptage(plato_joueur2)
-    if (score_joueur1 > score_joueur2) {
-        console.log("Vous avez gagné !")
-        fs.appendFileSync(fichier,`Le joueur ${joueur} a gagné\n`)
-    }
-    else if (score_joueur1 === score_joueur2) {
-        console.log("Il y a égalité")
-        fs.appendFileSync(fichier,"Personne n'a gagné\n")
-    }
-    else {
-        console.log("L'autre joueur a gagné !")
-        fs.appendFileSync(fichier,`Le joueur ${joueur+1} a gagné\n`)
-    }
-}
-
-function initialiserMatrice(nbLignes, nbColonnes) {
-    let matrice = [];
-    for (let i = 0; i < nbLignes; i++) {
-        matrice[i] = [];
-        for (let j = 0; j < nbColonnes; j++) {
-            matrice[i][j] = "";
-        }
-    }
-    return matrice;
-}
-
-function afficherMatrice(matrice) {
-    for (let i = 0; i < matrice.length; i++) {
-        let ligne = "";
-        for (let j = 0; j < matrice[i].length; j++) {
-            ligne += matrice[i][j] + "\t";
-        }
-        console.log(ligne);
-    }
-}
-
-function sac(lettres) {
-    let liste = [];
-    for (let [lettre, nombre] of lettres) {
-        for (let i = 0; i < nombre; i++) {
-            liste.push(lettre);
-        }
-    }
-    return liste;
-}
-
-function pioche(nombre, sac) {
-    if (nombre === 0) {
-        return [];
-    } 
-    else {
-        let cartePiochee = sac[Math.floor(Math.random() * sac.length)];
-        return [cartePiochee].concat(pioche(nombre - 1, sac));
-    }
 }
 
 function nouveau(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
@@ -181,21 +113,6 @@ function action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     })
 }
 
-function trouverLettresDifferentes(list_verif, mot_verif) {
-    list_temp = list_verif.slice()
-    let lettresDifferentes = [];
-    for (let lettre in mot_verif) {
-        if (list_temp.includes(mot_verif[lettre])) {
-            indice = list_temp.indexOf(mot_verif[lettre])
-            list_temp.splice(indice,1)
-        }
-        else {
-            lettresDifferentes.push(mot_verif[lettre])
-        }
-    }
-    return lettresDifferentes
-}
-
 function simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
     console.log("Quelle ligne voulez vous remplacer et par quoi ?");
     prompt.get(["Ligne_source","Mot_cible"], function(_,resultat_mot) {
@@ -266,22 +183,6 @@ function double(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
             jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         }
         });
-}
-
-function estListePresenteRecursif(listePetite, listeGrande, indexPetite = 0, indexGrande = 0) {
-    // Si tous les éléments de la liste petite ont été vérifiés, la liste est présente
-    if (indexPetite === listePetite.length) {
-      return true;
-    } 
-    // Parcourir la liste grande à partir de l'index actuel
-    for (let i = indexGrande; i < listeGrande.length; i++) {
-      // Si l'élément correspond, continuer la vérification récursive avec le prochain élément de la liste petite
-      if (listeGrande[i] === listePetite[indexPetite]) {
-        return estListePresenteRecursif(listePetite, listeGrande, indexPetite + 1, i + 1);
-      }
-    }
-    // Si aucun élément correspondant n'est trouvé, la liste n'est pas présente
-    return false;
 }
 
 function jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) {
