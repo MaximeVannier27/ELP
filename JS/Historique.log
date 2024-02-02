@@ -1,1 +1,3 @@
-Le premier joueur commenceLe joueur ${joueur} a posé le mot ${resultat_nouveau.Mot}Le joueur ${joueur} a posé le mot ${resultat_nouveau.Mot}Le joueur ${joueur} passe son tourLe joueur ${joueur} ne Jarnac pasLe joueur ${joueur} a piochéLe joueur ${joueur} a posé le mot ${resultat_nouveau.Mot}Le joueur ${joueur} a posé le mot ${resultat_nouveau.Mot}Le joueur ${joueur} passe son tourLe joueur ${joueur} a Jarnac le mot ${resultat_mot.Mot_cible}Le joueur ${joueur} a piochéLe joueur ${joueur} a posé le mot ${resultat_nouveau.Mot}Le joueur ${joueur} passe son tourLe joueur ${joueur} ne Jarnac pasLe joueur ${joueur} a piochéLe joueur ${joueur} passe son tourLe joueur ${joueur} a Jarnac le mot ${resultat_mot.Mot_cible}Le joueur ${joueur} a pioché
+Le deuxième joueur commence
+Le joueur 2 passe son tour
+Le joueur 1 ne Jarnac pas
