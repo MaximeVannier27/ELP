@@ -106,6 +106,9 @@ Fonction de gestion d'un tour
             joueur = (joueur%2)+1
             console.log(`C'est au joueur ${joueur} de jouer`)
             jarnac(main_adverse,main_perso,tapis_adverse,tapis_perso,sac) // si le joueur courant passe, lancement du tour suivant avec le jeu de l'autre joueur qui commence par le test de Jarnac
+        } else {
+            console.log("Erreur: Mauvaise syntaxe")
+            action_tour(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         }
     })
 }
@@ -204,10 +207,13 @@ Première fonction exécutée au lancement d'un tour, demandant au joueur s'il s
         else if(resultat_jarnac.Jarnac === "simple") {
             simple(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         } 
-        else {
+        else if(resultat_jarnac.Jarnac === "rien") {
             console.log("Pas de Jarnac");
             fs.appendFileSync(fichier,`Le joueur ${joueur} ne Jarnac pas\n`)
             action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac) //si pas de jarnac, lancement classique d'un tour
+        } else {
+            console.log("Erreur: Mauvaise syntaxe")
+            jarnac(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         }
     })
 }
@@ -220,7 +226,7 @@ Fonction gérant les différentes pioches possibles au début du tour d'un joueu
     console.log("Votre tapis:");
     afficherMatrice(tapis_perso)
     console.log("Voulez vous piocher ou échanger 3 cartes: (pioche/change)");
-    prompt.get(['Choix'], function (err,result_choix) {
+    prompt.get(['Choix'], function (_,result_choix) {
         if (result_choix.Choix === "pioche") {
             console.log('Vous avez choisi de piocher une lettre');
             main_perso = main_perso.concat(pioche(1,sac));
@@ -259,7 +265,8 @@ Fonction gérant les différentes pioches possibles au début du tour d'un joueu
             });  
         } 
         else {
-            console.log(err);
+            console.log("Erreur: Mauvaise syntaxe")
+            action_pioche(main_perso,main_adverse,tapis_perso,tapis_adverse,sac)
         }
     });
 }
