@@ -3,6 +3,6 @@
 /ELM/src/node_modules
 /ELM/src/package.json
 /JS/node_modules
-/JS/Historique.log
+/JS/*.log
 /JS/package-lock.json
 
