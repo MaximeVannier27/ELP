@@ -70,7 +70,7 @@ Fonction appelée lors de la victoire d'un des joueurs, et qui examine les cores
     score_joueur1 = comptage(plato_joueur1)
     score_joueur2 = comptage(plato_joueur2)
     if (score_joueur1 > score_joueur2) {
-        console.log("Vous avez gagné !")
+        console.log(`Le joueur ${joueur} a gagné\n`)
         fs.appendFileSync(fichier,`Le joueur ${joueur} a gagné\n`)
     }
     else if (score_joueur1 === score_joueur2) {
@@ -78,7 +78,7 @@ Fonction appelée lors de la victoire d'un des joueurs, et qui examine les cores
         fs.appendFileSync(fichier,"Personne n'a gagné\n")
     }
     else {
-        console.log("L'autre joueur a gagné !")
+        console.log(`Le joueur ${joueur+1} a gagné\n`)
         fs.appendFileSync(fichier,`Le joueur ${joueur+1} a gagné\n`)
     }
 }
