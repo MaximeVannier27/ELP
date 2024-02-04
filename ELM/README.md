@@ -5,11 +5,9 @@
 Vous devez avoir elm d'installer sur votre ordinateur, puis dans un terminal écrivez les commande suivante :
 
 ```bash
-login@hostname:~$ elm install elm/browser
-login@hostname:~$ elm install elm/html
+login@hostname:~$ elm init
 login@hostname:~$ elm install elm/http
 login@hostname:~$ elm install elm/random
-login@hostname:~$ elm install elm/core
 login@hostname:~$ elm install elm/json
 ```
 
